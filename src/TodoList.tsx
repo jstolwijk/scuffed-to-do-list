@@ -1,4 +1,4 @@
-import { useLocalStorage } from "react-use";
+import { useLocalStorage, useWindowSize } from "react-use";
 import React from "react";
 import { useState } from "react";
 import { ArrowLeftIcon, CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ToDoList } from "./Home";
+import Confetti from "react-confetti";
 
 interface Item {
   id: string;
@@ -47,7 +48,12 @@ function TodoList() {
   const toggleCompleted = (item: Item) => {
     const copy = [...items!!];
     const idx = copy.findIndex((i) => i.id === item.id);
+
     copy[idx] = { ...item, completed: !item.completed, order: Date.now() };
+
+    if (!item.completed) {
+      setParty(true);
+    }
     setItems(copy);
   };
   const removeItem = (item: Item) => {
@@ -56,27 +62,37 @@ function TodoList() {
 
   const itemsDone = items!!.filter((item) => item.completed);
 
+  const [party, setParty] = useState(false);
+
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="mx-auto container py-4">
-        <Link
-          className="text-2xl font-semibold flex"
-          to={{
-            pathname: "/",
-          }}
-        >
-          <ArrowLeftIcon className="w-6 h-6"></ArrowLeftIcon>
-        </Link>
-        <div className="flex justify-center">
-          <input
-            className="text-4xl font-bold bg-gray-100 text-center focus:outline-none focus:ring"
-            placeholder="Title"
-            value={listName}
-            onChange={(e) => setListName(e.target.value)}
-          ></input>
-        </div>
-
-        <div>
+      <Confetti
+        style={{ pointerEvents: "none" }}
+        numberOfPieces={party ? 500 : 0}
+        recycle={false}
+        onConfettiComplete={(confetti) => {
+          setParty(false);
+          confetti?.reset();
+        }}
+      />
+      <div className="mx-auto container px-4">
+        <nav className="flex">
+          <Link
+            className="text-2xl font-semibold flex mb-4"
+            to={{
+              pathname: "/",
+            }}
+          >
+            Ugly button to navigate to home page
+          </Link>
+        </nav>
+        <input
+          className="text-4xl font-bold bg-gray-100 focus:outline-none focus:ring"
+          placeholder="Title"
+          value={listName}
+          onChange={(e) => setListName(e.target.value)}
+        ></input>
+        <div className="py-4">
           <h2 className="text-2xl mb-4">To do</h2>
           <form
             onSubmit={(e) => {
@@ -85,7 +101,7 @@ function TodoList() {
             }}
             className="grid grid-flow-col grid-cols-2"
           >
-            <div className="bg-white shadow-lg border rounded mb-4 p-4 col-start-1 col-end-11">
+            <div className="bg-white shadow-lg border rounded mb-2 p-4 col-start-1 col-end-11">
               <input
                 required={true}
                 className="w-full"
@@ -106,7 +122,7 @@ function TodoList() {
             removeItem={removeItem}
           ></ItemList>
           {itemsDone.length > 0 && (
-            <div>
+            <div className="mt-4">
               <h2 className="text-2xl mb-4">Done 🎉</h2>
               <ItemList items={itemsDone} toggleCompleted={toggleCompleted} removeItem={removeItem} />
             </div>
@@ -130,7 +146,7 @@ const ItemList: React.FC<{
       <div>{children}</div>
       <ul>
         {sortedItems.map((item) => (
-          <li key={item.id} className="bg-white shadow-lg border rounded mb-4 p-4 flex">
+          <li key={item.id} className="bg-white shadow-lg border rounded mb-2 p-4 flex">
             <div className="mr-2">
               {!item.completed && (
                 <div className="border w-4 h-4 rounded-xl" onClick={() => toggleCompleted(item)}></div>

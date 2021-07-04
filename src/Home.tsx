@@ -36,7 +36,7 @@ const Home = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="mx-auto container ">
+      <div className="mx-auto container">
         <div className="text-center pt-16">
           <h1 className="text-4xl font-bold">Create a new to do list</h1>
           <form className="py-8" onSubmit={onFormSubmit}>
