@@ -8,7 +8,7 @@ function App() {
     <Router>
       <div>
         <Switch>
-          <Route path="/todo-list">
+          <Route path="/todo-list/:id">
             <TodoList />
           </Route>
           <Route path="/">

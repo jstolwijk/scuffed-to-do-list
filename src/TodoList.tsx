@@ -1,10 +1,12 @@
 import { useLocalStorage } from "react-use";
 import React from "react";
 import { useState } from "react";
-import { CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
+import { ArrowLeftIcon, CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
 import { v4 as uuidv4 } from "uuid";
 import { useMemo } from "react";
 import { useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { ToDoList } from "./Home";
 
 interface Item {
   id: string;
@@ -14,11 +16,22 @@ interface Item {
 }
 
 function TodoList() {
-  const [items, setItems] = useLocalStorage<Item[]>("items", []);
+  let { id } = useParams<{ id: string }>();
 
+  const [items, setItems] = useLocalStorage<Item[]>(id + "-items", []);
   const [newItemTitle, setNewItemTitle] = useState<string>("");
 
-  const [listName, setListName] = useLocalStorage<string>("title", "To do list");
+  const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>("to-do-lists", []);
+  const listName = useMemo<string>(() => toDoLists?.find((item) => item.id === id)?.title ?? "", [toDoLists]);
+
+  const setListName = (newName: string) => {
+    const copy = [...toDoLists!!];
+    const idx = copy.findIndex((item) => item.id === id);
+
+    copy[idx] = { ...copy[idx], title: newName };
+
+    setTodoLists(copy);
+  };
 
   useEffect(() => {
     document.title = "Idea box - " + listName;
@@ -46,9 +59,17 @@ function TodoList() {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="mx-auto container py-4">
+        <Link
+          className="text-2xl font-semibold flex"
+          to={{
+            pathname: "/",
+          }}
+        >
+          <ArrowLeftIcon className="w-6 h-6"></ArrowLeftIcon>
+        </Link>
         <div className="flex justify-center">
           <input
-            className="text-3xl font-semibold bg-gray-100 text-center focus:outline-none focus:ring"
+            className="text-4xl font-bold bg-gray-100 text-center focus:outline-none focus:ring"
             placeholder="Title"
             value={listName}
             onChange={(e) => setListName(e.target.value)}
