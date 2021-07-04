@@ -27,6 +27,13 @@ const Home = () => {
     history.push("/todo-list/" + toDoList.id);
   };
 
+  const onTrashCanClicked = (toDoList: ToDoList) => {
+    if (window.confirm(`Are you sure you want to delete: ${toDoList.title}?`)) {
+      setTodoLists(toDoLists?.filter((item) => item.id !== toDoList.id) || []);
+      localStorage.removeItem(toDoList.id + "-items");
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="mx-auto container ">
@@ -50,14 +57,19 @@ const Home = () => {
               <h2 className="text-3xl font-bold">Your to do lists 📋</h2>
               <ul className="py-4">
                 {toDoLists?.map((item) => (
-                  <Link
-                    key={item.id}
-                    to={{
-                      pathname: "/todo-list/" + item.id,
-                    }}
-                  >
-                    <li className="text-2xl p-1 font-medium">{item.title}</li>
-                  </Link>
+                  <li className="text-2xl p-1 font-medium">
+                    <Link
+                      key={item.id}
+                      to={{
+                        pathname: "/todo-list/" + item.id,
+                      }}
+                    >
+                      {item.title}
+                    </Link>
+                    <button className="ml-2" onClick={() => onTrashCanClicked(item)}>
+                      🗑️
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
