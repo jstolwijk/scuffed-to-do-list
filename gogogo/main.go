@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/dgraph-io/badger"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func getEnvOrDefault(varName string, fallback string) string {
@@ -14,14 +15,14 @@ func getEnvOrDefault(varName string, fallback string) string {
 
 	if value == "" {
 		value = fallback
-		log.Printf("No env var %varName found, use default: %s", varName, fallback)
+		log.Printf("No env var %s found, use default: %s", varName, fallback)
 	}
 
 	return value
 }
 
 func openBadgerDb() *badger.DB {
-	dbStoragePath := getEnvOrDefault("DB_STORAGE_PATH", "./database-files")
+	dbStoragePath := getEnvOrDefault("DB_STORAGE_PATH", "D:\\tmp\\database-files")
 
 	db, err := badger.Open(badger.DefaultOptions(dbStoragePath))
 
@@ -32,24 +33,54 @@ func openBadgerDb() *badger.DB {
 	return db
 }
 
+var DB *badger.DB
+
 func main() {
-	db := openBadgerDb()
-	defer db.Close()
+	DB = openBadgerDb()
+	defer DB.Close()
 
-	http.HandleFunc("/", indexHandler)
+	port := getEnvOrDefault("port", "8080")
 
-	port := getEnvOrDefault("PORT", "8080")
+	e := echo.New()
 
-	log.Printf("Listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
-	}
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	// Routes
+	e.GET("/", hello)
+	e.GET("/to-do-lists/:id", getToDoList)
+	e.POST("/to-do-lists", createToDoList)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":" + port))
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-	fmt.Fprint(w, "Hello, World!")
+func getToDoList(c echo.Context) error {
+	DB.View(func(txn *badger.Txn) error {
+		value, err := txn.Get([]byte("tdl@test"))
+		if err != nil {
+			return err
+		}
+
+		err = value.Value(func(val []byte) error {
+			return c.String(http.StatusOK, string(val))
+		})
+		return err
+	})
+	return nil
+}
+
+func createToDoList(c echo.Context) error {
+	err := DB.Update(func(txn *badger.Txn) error {
+		err := txn.Set([]byte("tdl@test"), []byte("hello world"))
+		return err
+	})
+
+	return err
+}
+
+func hello(c echo.Context) error {
+
+	return c.String(http.StatusOK, "Hello, World!")
 }
