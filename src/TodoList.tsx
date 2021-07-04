@@ -1,4 +1,4 @@
-import { CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
+import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useEffect, useMemo, useState } from "react";
 import Confetti from "react-confetti";
 import { Link, useParams } from "react-router-dom";
@@ -54,7 +54,9 @@ function TodoList() {
     setItems(copy);
   };
   const removeItem = (item: Item) => {
-    setItems(items!!.filter((i) => i.id !== item.id));
+    if (window.confirm(`Are you sure you want to delete ${item.title}?`)) {
+      setItems(items!!.filter((i) => i.id !== item.id));
+    }
   };
 
   const itemsDone = items!!.filter((item) => item.completed);
@@ -153,9 +155,7 @@ const ItemList: React.FC<{
               )}
             </div>
             <p className="flex-1">{item.title}</p>
-            <button onClick={() => removeItem(item)}>
-              <TrashIcon className="h-5 w-5 text-gray-600" />
-            </button>
+            <button onClick={() => removeItem(item)}>🗑️</button>
           </li>
         ))}
       </ul>
