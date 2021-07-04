@@ -45,9 +45,9 @@ const Home = () => {
               required
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
-              className="bg-gray-100"
+              className="bg-white rounded p-2 shadow"
             ></input>
-            <button className="bg-green-300 p-2 rounded" type="submit">
+            <button className="ml-2 bg-green-300 p-2 rounded shadow" type="submit">
               Create
             </button>
           </form>
