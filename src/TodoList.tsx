@@ -1,13 +1,10 @@
-import { useLocalStorage, useWindowSize } from "react-use";
-import React from "react";
-import { useState } from "react";
-import { ArrowLeftIcon, CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
-import { v4 as uuidv4 } from "uuid";
-import { useMemo } from "react";
-import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ToDoList } from "./Home";
+import { CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
+import React, { useEffect, useMemo, useState } from "react";
 import Confetti from "react-confetti";
+import { Link, useParams } from "react-router-dom";
+import { useLocalStorage } from "react-use";
+import { v4 as uuidv4 } from "uuid";
+import { ToDoList } from "./Home";
 
 interface Item {
   id: string;
