@@ -22,7 +22,7 @@ function TodoList() {
   const [newItemTitle, setNewItemTitle] = useState<string>("");
 
   const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>("to-do-lists", []);
-  const listName = useMemo<string>(() => toDoLists?.find((item) => item.id === id)?.title ?? "", [toDoLists]);
+  const listName = useMemo<string>(() => toDoLists?.find((item) => item.id === id)?.title ?? "", [toDoLists, id]);
 
   const setListName = (newName: string) => {
     const copy = [...toDoLists!!];

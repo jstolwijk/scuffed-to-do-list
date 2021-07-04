@@ -57,9 +57,8 @@ const Home = () => {
               <h2 className="text-3xl font-bold">Your to do lists 📋</h2>
               <ul className="py-4">
                 {toDoLists?.map((item) => (
-                  <li className="text-2xl p-1 font-medium">
+                  <li className="text-2xl p-1 font-medium" key={item.id}>
                     <Link
-                      key={item.id}
                       to={{
                         pathname: "/todo-list/" + item.id,
                       }}
