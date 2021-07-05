@@ -16,3 +16,15 @@ Tech stack:
 ### gogogo
 
 Backend app to enable link sharing features
+
+## Deploy backend
+
+https://certbot.eff.org/lets-encrypt/ubuntufocal-nginx
+
+# TODO
+
+- Step 5: https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04
+
+## Design
+
+https://www.netlify.com/pricing/
