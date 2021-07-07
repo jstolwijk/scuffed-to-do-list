@@ -1,12 +1,14 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
 import React, { useEffect, useMemo, useState } from "react";
+import { useContext } from "react";
 import Confetti from "react-confetti";
-import { Link, useParams } from "react-router-dom";
+import { generatePath, Link, Route, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
+import { PartyContext, Routes } from "./App";
 import { ToDoList } from "./Home";
 
-interface Item {
+export interface Item {
   id: string;
   title: string;
   completed: boolean;
@@ -14,17 +16,22 @@ interface Item {
 }
 
 function TodoList() {
-  let { id } = useParams<{ id: string }>();
+  let { toDoListId } = useParams<{ toDoListId: string }>();
 
-  const [items, setItems] = useLocalStorage<Item[]>(id + "-items", []);
+  const [items, setItems] = useLocalStorage<Item[]>(toDoListId + "-items", []);
   const [newItemTitle, setNewItemTitle] = useState<string>("");
 
   const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>("to-do-lists", []);
-  const listName = useMemo<string>(() => toDoLists?.find((item) => item.id === id)?.title ?? "", [toDoLists, id]);
+  const listName = useMemo<string>(
+    () => toDoLists?.find((item) => item.id === toDoListId)?.title ?? "",
+    [toDoLists, toDoListId]
+  );
+
+  const startTheParty = useContext(PartyContext);
 
   const setListName = (newName: string) => {
     const copy = [...toDoLists!!];
-    const idx = copy.findIndex((item) => item.id === id);
+    const idx = copy.findIndex((item) => item.id === toDoListId);
 
     copy[idx] = { ...copy[idx], title: newName };
 
@@ -49,7 +56,7 @@ function TodoList() {
     copy[idx] = { ...item, completed: !item.completed, order: Date.now() };
 
     if (!item.completed) {
-      setParty(true);
+      startTheParty();
     }
     setItems(copy);
   };
@@ -61,19 +68,8 @@ function TodoList() {
 
   const itemsDone = items!!.filter((item) => item.completed);
 
-  const [party, setParty] = useState(false);
-
   return (
     <div className="bg-gray-100 min-h-screen">
-      <Confetti
-        style={{ pointerEvents: "none" }}
-        numberOfPieces={party ? 500 : 0}
-        recycle={false}
-        onConfettiComplete={(confetti) => {
-          setParty(false);
-          confetti?.reset();
-        }}
-      />
       <div className="mx-auto container px-4">
         <nav className="flex">
           <Link
@@ -137,6 +133,8 @@ const ItemList: React.FC<{
   toggleCompleted: (item: Item) => void;
   removeItem: (item: Item) => void;
 }> = ({ items, toggleCompleted, removeItem, children }) => {
+  let { toDoListId } = useParams<{ toDoListId: string }>();
+
   // Sort ASC
   const sortedItems = useMemo(() => [...items].sort((a, b) => (b.order > a.order ? 1 : -1)), [items]);
 
@@ -154,7 +152,17 @@ const ItemList: React.FC<{
                 <CheckCircleIcon onClick={() => toggleCompleted(item)} className="h-5 w-5 text-green-500" />
               )}
             </div>
-            <p className="flex-1">{item.title}</p>
+            <Link
+              className="flex-1"
+              to={{
+                pathname: generatePath(Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM, {
+                  toDoListId,
+                  itemId: item.id,
+                }),
+              }}
+            >
+              <p>{item.title}</p>
+            </Link>
             <button onClick={() => removeItem(item)}>🗑️</button>
           </li>
         ))}

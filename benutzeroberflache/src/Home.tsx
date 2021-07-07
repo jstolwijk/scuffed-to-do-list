@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useHistory, Link } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
+import TodoList from "./TodoList";
 
 export interface ToDoList {
   id: string;
@@ -52,29 +53,38 @@ const Home = () => {
             </button>
           </form>
 
-          {toDoLists!!.length > 0 && (
-            <div className="mt-8">
-              <h2 className="text-3xl font-bold">Your to do lists 📋</h2>
-              <ul className="py-4">
-                {toDoLists?.map((item) => (
-                  <li className="text-2xl p-1 font-medium" key={item.id}>
-                    <Link
-                      to={{
-                        pathname: "/todo-list/" + item.id,
-                      }}
-                    >
-                      {item.title}
-                    </Link>
-                    <button className="ml-2" onClick={() => onTrashCanClicked(item)}>
-                      🗑️
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {toDoLists && toDoLists.length > 0 && (
+            <YourToDoLists toDoLists={toDoLists} onTrashCanClicked={onTrashCanClicked} />
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+const YourToDoLists: React.FC<{ toDoLists: ToDoList[]; onTrashCanClicked: (toDoList: ToDoList) => void }> = ({
+  toDoLists,
+  onTrashCanClicked,
+}) => {
+  return (
+    <div className="mt-8">
+      <h2 className="text-3xl font-bold">Your to do lists 📋</h2>
+      <ul className="py-4">
+        {toDoLists.map((item) => (
+          <li className="text-2xl p-1 font-medium" key={item.id}>
+            <Link
+              to={{
+                pathname: "/todo-list/" + item.id,
+              }}
+            >
+              {item.title}
+            </Link>
+            <button className="ml-2" onClick={() => onTrashCanClicked(item)}>
+              🗑️
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
