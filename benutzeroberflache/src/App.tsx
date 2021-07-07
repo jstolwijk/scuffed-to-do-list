@@ -21,17 +21,19 @@ function App() {
     <PartyContext.Provider value={() => setParty(true)}>
       <Router>
         <div>
-          <Confetti
-            style={{ pointerEvents: "none" }}
-            numberOfPieces={party ? 500 : 0}
-            recycle={false}
-            onConfettiComplete={(confetti) => {
-              setParty(false);
-              confetti?.reset();
-            }}
-            width={width}
-            height={height}
-          />
+          {party && (
+            <Confetti
+              style={{ pointerEvents: "none" }}
+              numberOfPieces={party ? 500 : 0}
+              recycle={false}
+              onConfettiComplete={(confetti) => {
+                setParty(false);
+                confetti?.reset();
+              }}
+              width={width}
+              height={height}
+            />
+          )}
           <Switch>
             <Route path={Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM}>
               <ToDoListItem />
