@@ -33,6 +33,7 @@ const ToDoListItem = () => {
           <h2 className="mb-4 text-xl">Notes</h2>
           {editorVisible && (
             <div>
+              {/*Fix height + remove previwew on mobile*/}
               <MDEditor value={value} onChange={setValue} />{" "}
               <button className="p-2 rounded bg-blue-300" onClick={() => setEditorVisible(false)}>
                 Done

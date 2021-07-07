@@ -4,6 +4,7 @@ import Home from "./Home";
 import TodoList from "./TodoList";
 import ToDoListItem from "./ToDoListItem";
 import Confetti from "react-confetti";
+import { useWindowSize } from "react-use";
 
 export enum Routes {
   HOME = "/",
@@ -15,6 +16,7 @@ export const PartyContext = createContext(() => {});
 
 function App() {
   const [party, setParty] = useState(false);
+  const { width, height } = useWindowSize();
   return (
     <PartyContext.Provider value={() => setParty(true)}>
       <Router>
@@ -27,6 +29,8 @@ function App() {
               setParty(false);
               confetti?.reset();
             }}
+            width={width}
+            height={height}
           />
           <Switch>
             <Route path={Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM}>

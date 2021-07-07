@@ -80,7 +80,7 @@ function TodoList() {
           </Link>
         </nav>
         <input
-          className="text-4xl font-bold bg-gray-100 focus:outline-none focus:ring"
+          className="text-4xl font-bold bg-gray-100 focus:outline-none focus:ring overflow-hidden"
           placeholder="Title"
           value={listName}
           onChange={(e) => setListName(e.target.value)}
