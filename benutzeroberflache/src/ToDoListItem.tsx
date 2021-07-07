@@ -1,17 +1,15 @@
-import MDEditor from "@uiw/react-md-editor";
-import { useMemo, useState } from "react";
+import { useMemo, useState, lazy, Suspense } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { Routes } from "./App";
 import { Item } from "./TodoList";
+const Notes = lazy(() => import("./Notes"));
 
 const ToDoListItem = () => {
   let { itemId, toDoListId } = useParams<{ itemId: string; toDoListId: string }>();
 
   const [items] = useLocalStorage<Item[]>(toDoListId + "-items", []);
   const item = useMemo(() => items?.find((item) => item.id === itemId), [itemId, items]);
-  const [value, setValue] = useLocalStorage<string | undefined>(toDoListId + "-notes", "");
-  const [editorVisible, setEditorVisible] = useState(false);
 
   return (
     <div className="pt-8 mx-auto container">
@@ -31,23 +29,9 @@ const ToDoListItem = () => {
         </div>
         <div className="pt-4">
           <h2 className="mb-4 text-xl">Notes</h2>
-          {editorVisible && (
-            <div>
-              {/*Fix height + remove previwew on mobile*/}
-              <MDEditor value={value} onChange={setValue} />{" "}
-              <button className="p-2 rounded bg-blue-300" onClick={() => setEditorVisible(false)}>
-                Done
-              </button>
-            </div>
-          )}
-          {!editorVisible && (
-            <div>
-              <MDEditor.Markdown source={value} />
-              <button className="p-2 rounded bg-blue-300" onClick={() => setEditorVisible(true)}>
-                Edit
-              </button>
-            </div>
-          )}
+          <Suspense fallback={<div></div>}>
+            <Notes />
+          </Suspense>
         </div>
       </div>
     </div>
