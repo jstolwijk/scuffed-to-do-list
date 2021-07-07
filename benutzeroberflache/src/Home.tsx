@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useHistory, Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
-import TodoList from "./TodoList";
 
 export interface ToDoList {
   id: string;

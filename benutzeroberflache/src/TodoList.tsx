@@ -1,8 +1,6 @@
 import { CheckCircleIcon } from "@heroicons/react/solid";
-import React, { useEffect, useMemo, useState } from "react";
-import { useContext } from "react";
-import Confetti from "react-confetti";
-import { generatePath, Link, Route, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
 import { PartyContext, Routes } from "./App";

@@ -1,15 +1,15 @@
+import MDEditor from "@uiw/react-md-editor";
 import { useMemo, useState } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { Routes } from "./App";
 import { Item } from "./TodoList";
-import MDEditor from "@uiw/react-md-editor";
 
 const ToDoListItem = () => {
   let { itemId, toDoListId } = useParams<{ itemId: string; toDoListId: string }>();
 
   const [items] = useLocalStorage<Item[]>(toDoListId + "-items", []);
-  const item = useMemo(() => items?.find((item) => item.id === itemId), [itemId]);
+  const item = useMemo(() => items?.find((item) => item.id === itemId), [itemId, items]);
   const [value, setValue] = useLocalStorage<string | undefined>(toDoListId + "-notes", "");
   const [editorVisible, setEditorVisible] = useState(false);
 
