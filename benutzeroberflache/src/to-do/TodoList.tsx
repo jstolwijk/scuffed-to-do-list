@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
-import { PartyContext, Routes } from "./App";
+import { PartyContext, Routes } from "../App";
 import { ToDoList } from "./Home";
 
 export interface Item {
@@ -67,60 +67,51 @@ function TodoList() {
   const itemsDone = items!!.filter((item) => item.completed);
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="mx-auto container px-4">
-        <nav className="flex">
-          <Link
-            className="text-2xl font-semibold flex mb-4"
-            to={{
-              pathname: "/",
-            }}
-          >
-            Ugly button to navigate to home page
-          </Link>
-        </nav>
-        <input
-          className="text-4xl font-bold bg-gray-100 focus:outline-none focus:ring overflow-hidden"
-          placeholder="Title"
-          value={listName}
-          onChange={(e) => setListName(e.target.value)}
-        ></input>
-        <div className="py-4">
-          <h2 className="text-2xl mb-4">To do</h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              addItem();
-            }}
-            className="grid grid-flow-col grid-cols-2"
-          >
-            <div className="bg-white shadow-lg border rounded mb-2 p-4 col-start-1 col-end-11">
-              <input
-                required={true}
-                className="w-full"
-                value={newItemTitle}
-                onChange={(e) => setNewItemTitle(e.target.value)}
-                placeholder="New item"
-              ></input>
-            </div>
-            <div className="col-start-12">
-              <button className="ml-2 border rounded bg-green-300 p-4 shadow" type="submit">
-                Add item
-              </button>
-            </div>
-          </form>
-          <ItemList
-            items={items!!.filter((item) => !item.completed)}
-            toggleCompleted={toggleCompleted}
-            removeItem={removeItem}
-          ></ItemList>
-          {itemsDone.length > 0 && (
-            <div className="mt-4">
-              <h2 className="text-2xl mb-4">Done 🎉</h2>
-              <ItemList items={itemsDone} toggleCompleted={toggleCompleted} removeItem={removeItem} />
-            </div>
-          )}
-        </div>
+    <div className="mx-auto container px-4">
+      <Link to={Routes.TO_DOS} className="block font-semibold text-xl pb-8">
+        🔙 Back
+      </Link>
+      <input
+        className="text-4xl font-bold bg-gray-100 focus:outline-none focus:ring overflow-hidden"
+        placeholder="Title"
+        value={listName}
+        onChange={(e) => setListName(e.target.value)}
+      ></input>
+      <div className="py-4">
+        <h2 className="text-2xl mb-4">To do</h2>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            addItem();
+          }}
+          className="grid grid-flow-col grid-cols-2"
+        >
+          <div className="bg-white shadow-lg border rounded mb-2 p-4 col-start-1 col-end-11">
+            <input
+              required={true}
+              className="w-full"
+              value={newItemTitle}
+              onChange={(e) => setNewItemTitle(e.target.value)}
+              placeholder="New item"
+            ></input>
+          </div>
+          <div className="col-start-12">
+            <button className="ml-2 border rounded bg-green-300 p-4 shadow" type="submit">
+              Add item
+            </button>
+          </div>
+        </form>
+        <ItemList
+          items={items!!.filter((item) => !item.completed)}
+          toggleCompleted={toggleCompleted}
+          removeItem={removeItem}
+        ></ItemList>
+        {itemsDone.length > 0 && (
+          <div className="mt-4">
+            <h2 className="text-2xl mb-4">Done 🎉</h2>
+            <ItemList items={itemsDone} toggleCompleted={toggleCompleted} removeItem={removeItem} />
+          </div>
+        )}
       </div>
     </div>
   );

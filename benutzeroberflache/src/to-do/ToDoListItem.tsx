@@ -1,7 +1,7 @@
 import { useMemo, lazy, Suspense } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { Routes } from "./App";
+import { Routes } from "../App";
 import { Item } from "./TodoList";
 const Notes = lazy(() => import("./Notes"));
 
@@ -12,18 +12,19 @@ const ToDoListItem = () => {
   const item = useMemo(() => items?.find((item) => item.id === itemId), [itemId, items]);
 
   return (
-    <div className="pt-8 mx-auto container">
+    <div className="mx-auto container">
       <Link
-        className="text-2xl font-semibold"
         to={{
           pathname: generatePath(Routes.TO_DO_LIST, {
             toDoListId,
           }),
         }}
+        className="block font-semibold text-xl pb-8"
       >
-        Back
+        🔙 Back
       </Link>
-      <div className="mt-8 p-4 rounded shadow-2xl">
+
+      <div className="mt-8 p-4 rounded shadow-2xl bg-white">
         <div className="flex">
           <h1 className={`text-4xl font-bold ${item?.completed && "line-through"}`}>{item?.title}</h1>
         </div>
