@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import useDigitInput from "react-digit-input";
 import { useHistory } from "react-router-dom";
 import { Routes } from "../App";
@@ -21,15 +20,8 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
     onChange: setPascode,
   });
   const history = useHistory();
-  useEffect(() => {
-    setPasscodeStatus(PasscodeStatus.INIT);
 
-    if (firstCheck && passcode.replaceAll(" ", "").length === 6) {
-      checkPasscode();
-    }
-  }, [passcode]);
-
-  const checkPasscode = async () => {
+  const checkPasscode = useCallback(async () => {
     setFirstCheck(false);
     try {
       const response = await fetch("http://localhost:3000/sign-in", {
@@ -48,7 +40,15 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
       console.log("invalid passcode");
       setPasscodeStatus(PasscodeStatus.INVALID);
     }
-  };
+  }, [email, history, passcode]);
+
+  useEffect(() => {
+    setPasscodeStatus(PasscodeStatus.INIT);
+
+    if (firstCheck && passcode.replaceAll(" ", "").length === 6) {
+      checkPasscode();
+    }
+  }, [passcode, checkPasscode, firstCheck]);
 
   const classNames = "rounded shadow-lg p-2 m-1 bg-white w-8 text-center font-semibold text-lg";
   return (

@@ -1,15 +1,5 @@
-import { generatePath, Link, NavLink, useHistory } from "react-router-dom";
-import { useLocation } from "react-use";
-import useSWR from "swr";
+import { generatePath, useHistory } from "react-router-dom";
 import { Routes } from "../App";
-
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
-
-interface Document {
-  _id: string;
-  title: string;
-  content: string;
-}
 
 const DocumentHierarchy = () => {
   // const { data } = useSWR("http://localhost:3000/documents", fetcher);

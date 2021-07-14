@@ -1,4 +1,4 @@
-import { useMemo, lazy, Suspense } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { Routes } from "../App";

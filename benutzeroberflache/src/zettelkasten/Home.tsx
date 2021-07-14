@@ -1,5 +1,5 @@
 import MDEditor from "@uiw/react-md-editor";
-import { Link, generatePath } from "react-router-dom";
+import { generatePath, Link } from "react-router-dom";
 import useSWR from "swr";
 import { Routes } from "../App";
 
@@ -51,48 +51,6 @@ const DocumentList = () => {
       </ul>
     </div>
   );
-};
-
-enum Color {
-  YELLOW,
-  BLUE,
-  GREEN,
-  GRAY,
-}
-
-const toBgColor = (color: Color): string => {
-  switch (color) {
-    case Color.YELLOW:
-      return "bg-yellow-300";
-    case Color.BLUE:
-      return "bg-blue-300";
-    case Color.GRAY:
-      return "bg-gray-300";
-    case Color.GREEN:
-      return "bg-green-300";
-    default:
-      return "bg-white";
-  }
-};
-
-const MenuItem: React.FC<{ color: Color }> = ({ children, color }) => {
-  const classNames = { [toBgColor(color)]: true, "p-4": true, rounded: true };
-
-  return <div className={className(classNames)}>{children}</div>;
-};
-
-interface Classes {
-  [key: string]: boolean;
-}
-
-const className = (classes: Classes): string => {
-  return Object.keys(classes).reduce((acc, curr) => {
-    if (classes[curr]) {
-      return acc + " " + curr;
-    } else {
-      return acc;
-    }
-  }, "");
 };
 
 export default Zettelkasten;

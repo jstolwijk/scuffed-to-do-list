@@ -1,28 +1,19 @@
 import { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { Routes } from "../App";
 import EnterPasscode from "./EnterPasscode";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
-  const [pending, setPending] = useState(false);
   const [showPasscode, setShowpasscode] = useState(false);
 
   const signUp = async () => {
-    setPending(true);
+    const response = await fetch("http://localhost:3000/sign-up", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+      headers: { "Content-Type": "application/json" },
+    });
 
-    try {
-      const response = await fetch("http://localhost:3000/sign-up", {
-        method: "POST",
-        body: JSON.stringify({ email }),
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (response.ok) {
-        setShowpasscode(true);
-      }
-    } finally {
-      setPending(false);
+    if (response.ok) {
+      setShowpasscode(true);
     }
   };
 

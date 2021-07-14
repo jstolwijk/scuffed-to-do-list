@@ -1,9 +1,9 @@
-import express from "express";
-import PouchDB from "pouchdb";
 import bodyParser from "body-parser";
-import { v4 as uuidv4 } from "uuid";
+import express from "express";
 import http from "http";
+import PouchDB from "pouchdb";
 import { Server } from "socket.io";
+import { v4 as uuidv4 } from "uuid";
 
 const app = express();
 const port = process.env.PORT || 8080;

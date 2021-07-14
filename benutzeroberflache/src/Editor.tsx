@@ -1,10 +1,10 @@
 // It is important to import the Editor which accepts plugins.
 import Editor from "@draft-js-plugins/editor";
 import createInlineToolbarPlugin from "@draft-js-plugins/inline-toolbar";
-import React from "react";
+import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
 import { EditorState } from "draft-js";
 import "draft-js/dist/Draft.css";
-import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
+import React from "react";
 
 // Creates an Instance. At this step, a configuration object can be passed in
 // as an argument.

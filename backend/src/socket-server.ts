@@ -1,9 +1,9 @@
+import bodyParser from "body-parser";
+import crypto from "crypto";
 import express from "express";
-import { Server } from "socket.io";
 import http from "http";
 import PouchDB from "pouchdb";
-import bodyParser from "body-parser";
-import crypto, { randomBytes } from "crypto";
+import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 
 const app = express();

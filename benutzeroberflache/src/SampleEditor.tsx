@@ -1,8 +1,8 @@
-import React, { ReactElement, useEffect, useMemo, useRef, useState } from "react";
-import { convertToRaw, EditorState } from "draft-js";
 import Editor from "@draft-js-plugins/editor";
 import createInlineToolbarPlugin from "@draft-js-plugins/inline-toolbar";
 import "@draft-js-plugins/inline-toolbar/lib/plugin.css";
+import { convertToRaw, EditorState } from "draft-js";
+import React, { useMemo, useRef } from "react";
 import socket from "./Socket";
 
 const SimpleInlineToolbarEditor: React.FC<{ editorState: EditorState; onChange: (editorState: EditorState) => void }> =

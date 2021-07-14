@@ -1,14 +1,11 @@
-// interface Project {
-//   id: string;
-//   name: string;
-// }
-
-import faker from "faker";
-import { useRef, useState } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMouse } from "react-use";
 import socket from "../Socket";
-
+enum State {
+  TO_DO = "TO_DO",
+  IN_PROGRESS = "IN_PROGRESS",
+  DONE = "DONE",
+}
 interface WorkItem {
   id: string;
   title: string;
@@ -136,12 +133,6 @@ const Column: React.FC<{ title: string; workItems: WorkItem[] }> = ({ title, wor
 
 const riskColors = ["bg-green-600", "bg-green-300", "bg-yellow-100", "bg-red-300", "bg-red-600"];
 
-enum State {
-  TO_DO = "TO_DO",
-  IN_PROGRESS = "IN_PROGRESS",
-  DONE = "DONE",
-}
-
 const WorkItemTile: React.FC<WorkItem> = ({ id, title, riskLevel, state }) => {
   return (
     <div className={`${riskColors[riskLevel]} h-32 p-4 cursor-pointer border-2 border-black`}>
@@ -159,7 +150,5 @@ const WorkItemTile: React.FC<WorkItem> = ({ id, title, riskLevel, state }) => {
     </div>
   );
 };
-
-const random = (upperLimit: number) => Math.floor(Math.random() * upperLimit);
 
 export default Board;

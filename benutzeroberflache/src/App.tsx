@@ -1,15 +1,14 @@
-import { useState, createContext } from "react";
-import { BrowserRouter as Router, Switch, Route, NavLink, Redirect, useLocation } from "react-router-dom";
+import { createContext, useState } from "react";
+import Confetti from "react-confetti";
+import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import { useWindowSize } from "react-use";
+import SignUp from "./auth/SignUp";
+import Board from "./task-tracker/Board";
 import Home from "./to-do/Home";
 import TodoList from "./to-do/TodoList";
 import ToDoListItem from "./to-do/ToDoListItem";
-import Confetti from "react-confetti";
-import { useWindowSize } from "react-use";
-import ZettelkastenHome from "./zettelkasten/Home";
 import DocumentEditor from "./zettelkasten/DocumentEditor";
-import SignUp from "./auth/SignUp";
-import EnterPasscode from "./auth/EnterPasscode";
-import Board from "./task-tracker/Board";
+import ZettelkastenHome from "./zettelkasten/Home";
 
 export enum Routes {
   HOME = "/",
@@ -33,7 +32,6 @@ function App() {
     <PartyContext.Provider value={() => setParty(true)}>
       <Router>
         <div className="bg-gray-100">
-          {/* <NavBar /> */}
           {party && (
             <Confetti
               style={{ pointerEvents: "none" }}
@@ -83,22 +81,5 @@ function App() {
     </PartyContext.Provider>
   );
 }
-
-const NavBar = () => {
-  const location = useLocation();
-  return location.pathname !== Routes.SIGN_UP &&
-    location.pathname !== Routes.ENTER_PASSCODE &&
-    location.pathname !== Routes.BOARD ? (
-    <nav>
-      <div className="flex flex-row space-x-10 items-center justify-center text-2xl font-semibold">
-        <NavLink to={Routes.HOME}>To dos</NavLink>
-        <NavLink to={Routes.IDEAS}>Ideas</NavLink>
-        <NavLink to={Routes.TO_DOS}>Login</NavLink>
-      </div>
-    </nav>
-  ) : (
-    <></>
-  );
-};
 
 export default App;
