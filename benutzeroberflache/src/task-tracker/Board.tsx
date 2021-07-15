@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { useMouse } from "react-use";
+import { useEffect, useState } from "react";
 import socket from "../Socket";
 enum State {
   TO_DO = "TO_DO",
@@ -13,22 +12,9 @@ interface WorkItem {
   state: State;
 }
 
-interface Cursor {
-  x: number;
-  y: number;
-}
-
 const Board = () => {
   const [newWorkItemName, setNewWorkItemName] = useState("");
-  const [otherCursor, setOtherCursor] = useState<Cursor | null>(null);
   const [workItems, setWorkItems] = useState<WorkItem[]>([]);
-
-  const ref = useRef(null);
-  const { docX, docY } = useMouse(ref);
-
-  useEffect(() => {
-    socket.emit("mouseLocationUpdated", { docX, docY });
-  }, [docX, docY]);
 
   useEffect(() => {
     (async () => {
@@ -42,9 +28,6 @@ const Board = () => {
       socket.on("workItemCreated", (workItem: WorkItem) => {
         console.log("New work item created. ", workItem);
         setWorkItems((old) => [workItem, ...old]);
-      });
-      socket.on("mouseLocationUpdated", ({ docX, docY }) => {
-        setOtherCursor({ x: docX, y: docY });
       });
       socket.on("workItemStateChanged", ({ workItemId, newState }) => {
         console.log("workItemStateChanged");
@@ -66,19 +49,7 @@ const Board = () => {
   }, []);
 
   return (
-    <div className="border-2 border-black bg-black" ref={ref}>
-      {otherCursor && (
-        <div
-          className="flex"
-          style={{
-            position: "absolute",
-            left: Math.min(otherCursor.x, window.innerWidth - 20),
-            top: Math.min(otherCursor.y, window.innerHeight - 40),
-          }}
-        >
-          <div className="rounded-full p-2 bg-blue-500 text-xs">J</div>
-        </div>
-      )}
+    <div className="border-2 border-black bg-black">
       <div className="bg-white border-2 border-black flex">
         <h1 className="p-2 border-2 border-black font-bold text-lg">Jesse's board</h1>
         <div className="flex-1 flex">
