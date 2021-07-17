@@ -1,13 +1,11 @@
-import { Redirect, Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { useMount } from "react-use";
 import SignUp from "./auth/SignUp";
-import { SpaceRouter } from "./space/Router";
 import Home from "./Home";
+import { SpaceRouter } from "./space/Router";
 import ToDoPage from "./to-do/Home";
 import TodoList from "./to-do/TodoList";
 import ToDoListItem from "./to-do/ToDoListItem";
-import DocumentEditor from "./zettelkasten/DocumentEditor";
-import ZettelkastenHome from "./zettelkasten/Home";
 
 export enum Routes {
   HOME = "/",
@@ -41,9 +39,6 @@ export const AppRouter = () => {
         <Route path={Routes.SIGN_UP}>
           <SignUp />
         </Route>
-        <Route path={Routes.IDEAS}>
-          <ZettelkastenHome />
-        </Route>
         <Route path={Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM}>
           <ToDoListItem />
         </Route>
@@ -52,9 +47,6 @@ export const AppRouter = () => {
         </Route>
         <Route path={Routes.TO_DOS}>
           <ToDoPage />
-        </Route>
-        <Route path={Routes.EDIT_IDEA} exact>
-          <DocumentEditor />
         </Route>
         <Route path={Routes.HOME} exact>
           <Home />

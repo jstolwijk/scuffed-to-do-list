@@ -12,7 +12,10 @@ const Home = () => {
   const [newListName, setNewListName] = useState<string>("");
   const history = useHistory();
 
-  const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>("to-do-lists", []);
+  const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>(
+    "to-do-lists",
+    []
+  );
 
   const onFormSubmit = (e: any) => {
     e.preventDefault();
@@ -51,16 +54,19 @@ const Home = () => {
       </form>
 
       {toDoLists && toDoLists.length > 0 && (
-        <YourToDoLists toDoLists={toDoLists} onTrashCanClicked={onTrashCanClicked} />
+        <YourToDoLists
+          toDoLists={toDoLists}
+          onTrashCanClicked={onTrashCanClicked}
+        />
       )}
     </div>
   );
 };
 
-const YourToDoLists: React.FC<{ toDoLists: ToDoList[]; onTrashCanClicked: (toDoList: ToDoList) => void }> = ({
-  toDoLists,
-  onTrashCanClicked,
-}) => {
+const YourToDoLists: React.FC<{
+  toDoLists: ToDoList[];
+  onTrashCanClicked: (toDoList: ToDoList) => void;
+}> = ({ toDoLists, onTrashCanClicked }) => {
   return (
     <div className="mt-8">
       <h2 className="text-3xl font-bold">Your to do lists 📋</h2>

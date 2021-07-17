@@ -127,48 +127,81 @@ enum State {
   DONE = "DONE",
 }
 
-let workItems = [
+interface WorkItem {
+  id: string;
+  title: string;
+  riskLevel: number;
+  state: State;
+  shortId: number;
+  blockedBy: string[];
+  blocks: string[];
+}
+
+const firstId = uuidv4();
+const secondId = uuidv4();
+let workItems: WorkItem[] = [
   {
-    id: uuidv4(),
+    id: firstId,
     title: "Et aperiam eveniet.",
     riskLevel: 0,
     state: State.TO_DO,
+    shortId: 1,
+    blockedBy: [],
+    blocks: [secondId],
   },
   {
-    id: uuidv4(),
+    id: secondId,
     title: "Qui quia aliquid ea facere non occaecati sequi.",
     riskLevel: 4,
     state: State.TO_DO,
+    shortId: 2,
+    blockedBy: [firstId],
+    blocks: [],
   },
   {
     id: uuidv4(),
     title: "Unde maxime praesentium.",
     riskLevel: 2,
     state: State.TO_DO,
+    shortId: 3,
+    blockedBy: [],
+    blocks: [],
   },
   {
     id: uuidv4(),
     title: "Refactor all the things",
     riskLevel: 2,
     state: State.TO_DO,
+    shortId: 4,
+    blockedBy: [],
+    blocks: [],
   },
   {
     id: uuidv4(),
     title: "Follow cursor",
     riskLevel: 2,
     state: State.TO_DO,
+    shortId: 5,
+    blockedBy: [],
+    blocks: [],
   },
   {
     id: uuidv4(),
     title: "Drink coffee",
     riskLevel: 0,
     state: State.DONE,
+    shortId: 6,
+    blockedBy: [],
+    blocks: [],
   },
   {
     id: uuidv4(),
     title: "Design website",
     riskLevel: 2,
     state: State.TO_DO,
+    shortId: 7,
+    blockedBy: [],
+    blocks: [],
   },
 ];
 
@@ -178,8 +211,9 @@ io.on("connection", (socket) => {
     console.log(data);
   });
 
-  socket.on("getSpaces", () => {
+  socket.on("getSpaces", ({ requestId }) => {
     socket.emit("spaces", {
+      requestId,
       spaces: [
         { name: "jesse", title: "Jesse", description: "Tracking personal progress" },
         { name: "test-space", title: "Test space", description: "Testing" },
@@ -188,9 +222,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createWorkItem", (workItem) => {
-    workItems = [workItem, ...workItems];
+    workItems = [{ ...workItem, shortId: workItems.length }, ...workItems];
 
     socket.broadcast.emit("workItemCreated", workItem);
+  });
+
+  socket.on("blockWorkItem", ({ workItemId, blockedByWorkItemId }) => {
+    const idx = workItems.findIndex((workItem) => workItem.id === workItemId);
+
+    workItems[idx] = { ...workItems[idx], blockedBy: [...workItems[idx].blockedBy, blockedByWorkItemId] };
+
+    const blockedByIdx = workItems.findIndex((workItem) => workItem.id === workItemId);
+
+    workItems[blockedByIdx] = {
+      ...workItems[blockedByIdx],
+      blocks: [...workItems[blockedByIdx].blocks, workItemId],
+    };
+
+    socket.broadcast.emit("workItemBlocked", { workItemId, blockedByWorkItemId });
   });
 
   socket.on("changeWorkItemState", ({ workItemId, oldState, newState }) => {
@@ -201,15 +250,27 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("workItemStateChanged", { workItemId, oldState, newState });
   });
 
-  socket.on("getWorkItem", (data) => {
-    socket.emit(
-      "workItem",
-      workItems.find((workItem) => workItem.id === data.workItemId)
-    );
+  socket.on("getWorkItem", ({ requestId, ...rest }) => {
+    const workItem = workItems.find((workItem) => workItem.id === rest.workItemId)!;
+    socket.emit("workItem", {
+      requestId,
+      ...workItem,
+      blockedBy: workItem.blockedBy.map((workItemId) => ({
+        id: workItemId,
+        title: workItems.find((wi) => wi.id === workItemId).title,
+        shortId: workItems.find((wi) => wi.id === workItemId).shortId,
+      })),
+      blocks: workItem.blocks.map((workItemId) => ({
+        id: workItemId,
+        title: workItems.find((wi) => wi.id === workItemId).title,
+        shortId: workItems.find((wi) => wi.id === workItemId).shortId,
+      })),
+    });
   });
 
-  socket.on("getWorkItems", (data) => {
+  socket.on("getWorkItems", ({ requestId }) => {
     socket.emit("workItems", {
+      requestId,
       todo: workItems,
     });
   });

@@ -6,7 +6,10 @@ import { useLocalStorage } from "react-use";
 const Notes = () => {
   let { itemId } = useParams<{ itemId: string }>();
 
-  const [value, setValue] = useLocalStorage<string | undefined>(itemId + "-notes", "");
+  const [value, setValue] = useLocalStorage<string | undefined>(
+    itemId + "-notes",
+    ""
+  );
   const [editorVisible, setEditorVisible] = useState(false);
   return (
     <div>
@@ -14,7 +17,10 @@ const Notes = () => {
         <div>
           {/*Fix height + remove previwew on mobile*/}
           <MDEditor value={value} onChange={setValue} />{" "}
-          <button className="p-2 rounded bg-blue-300" onClick={() => setEditorVisible(false)}>
+          <button
+            className="p-2 rounded bg-blue-300"
+            onClick={() => setEditorVisible(false)}
+          >
             Done
           </button>
         </div>
@@ -22,7 +28,10 @@ const Notes = () => {
       {!editorVisible && (
         <div>
           <MDEditor.Markdown source={value} />
-          <button className="p-2 rounded bg-blue-300" onClick={() => setEditorVisible(true)}>
+          <button
+            className="p-2 rounded bg-blue-300"
+            onClick={() => setEditorVisible(true)}
+          >
             Edit
           </button>
         </div>

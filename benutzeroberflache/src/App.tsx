@@ -1,8 +1,8 @@
-import { ArrowDownIcon, ChevronDownIcon } from "@heroicons/react/solid";
+import { ChevronDownIcon } from "@heroicons/react/solid";
 import { createContext, useState } from "react";
 import Confetti from "react-confetti";
 import { BrowserRouter as Router, NavLink } from "react-router-dom";
-import { useLocalStorage, useWindowSize } from "react-use";
+import { useWindowSize } from "react-use";
 import { AppRouter, Routes } from "./AppRouter";
 import { SpaceRoutes } from "./space/Router";
 
@@ -41,10 +41,16 @@ const NavBar = () => {
   return (
     <nav className="w-full bg-black text-gray-300 mb-4">
       <div className="mx-auto container flex items-center">
-        <NavLink to={Routes.HOME} className="pr-4 align-middle hover:text-white">
+        <NavLink
+          to={Routes.HOME}
+          className="pr-4 align-middle hover:text-white"
+        >
           Home
         </NavLink>
-        <NavLink to={SpaceRoutes.SPACE} className="pr-4 align-middle hover:text-white">
+        <NavLink
+          to={SpaceRoutes.SPACE}
+          className="pr-4 align-middle hover:text-white"
+        >
           Spaces
         </NavLink>
         <NavLink to={Routes.TO_DOS} className="align-middle hover:text-white">
@@ -52,7 +58,9 @@ const NavBar = () => {
         </NavLink>
         <div className="flex-grow"></div>
         <div className="flex items-center p-2 cursor-pointer hover:text-white">
-          <div className="rounded-full h-8 w-8 flex items-center justify-center bg-red-500">J</div>
+          <div className="rounded-full h-8 w-8 flex items-center justify-center bg-red-500">
+            J
+          </div>
           <p className="pl-2 items-center">Jesse</p>
           <ChevronDownIcon className="pl-2 h-6 w-6 items-center" />
         </div>

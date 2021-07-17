@@ -6,10 +6,14 @@ import { Item } from "./TodoList";
 const Notes = lazy(() => import("./Notes"));
 
 const ToDoListItem = () => {
-  let { itemId, toDoListId } = useParams<{ itemId: string; toDoListId: string }>();
+  let { itemId, toDoListId } =
+    useParams<{ itemId: string; toDoListId: string }>();
 
   const [items] = useLocalStorage<Item[]>(toDoListId + "-items", []);
-  const item = useMemo(() => items?.find((item) => item.id === itemId), [itemId, items]);
+  const item = useMemo(
+    () => items?.find((item) => item.id === itemId),
+    [itemId, items]
+  );
 
   return (
     <div className="mx-auto container">
@@ -26,7 +30,13 @@ const ToDoListItem = () => {
 
       <div className="mt-8 p-4 rounded shadow-2xl bg-white">
         <div className="flex">
-          <h1 className={`text-4xl font-bold ${item?.completed && "line-through"}`}>{item?.title}</h1>
+          <h1
+            className={`text-4xl font-bold ${
+              item?.completed && "line-through"
+            }`}
+          >
+            {item?.title}
+          </h1>
         </div>
         <div className="pt-4">
           <h2 className="mb-4 text-xl">Notes</h2>

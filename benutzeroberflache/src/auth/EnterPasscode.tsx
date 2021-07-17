@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useDigitInput from "react-digit-input";
 import { useHistory } from "react-router-dom";
 import { Routes } from "../AppRouter";
@@ -50,7 +50,8 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
     }
   }, [passcode, checkPasscode, firstCheck]);
 
-  const classNames = "rounded shadow-lg p-2 m-1 bg-white w-8 text-center font-semibold text-lg";
+  const classNames =
+    "rounded shadow-lg p-2 m-1 bg-white w-8 text-center font-semibold text-lg";
   return (
     <form
       className="pt-2"
@@ -60,7 +61,12 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
       }}
     >
       <div className="p-2 input-group mb-4">
-        <input className={classNames} inputMode="decimal" autoFocus {...digits[0]} />
+        <input
+          className={classNames}
+          inputMode="decimal"
+          autoFocus
+          {...digits[0]}
+        />
         <input className={classNames} inputMode="decimal" {...digits[1]} />
         <input className={classNames} inputMode="decimal" {...digits[2]} />
         <span className="px-1" />
@@ -68,8 +74,13 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
         <input className={classNames} inputMode="decimal" {...digits[4]} />
         <input className={classNames} inputMode="decimal" {...digits[5]} />
       </div>
-      {passcodeStatus === PasscodeStatus.INVALID && <p className="font-semibold text-red-500">Invalid passcode</p>}
-      <button className="shadow-lg ml-4 bg-blue-500 py-1 px-4 rounded-full text-white" type="submit">
+      {passcodeStatus === PasscodeStatus.INVALID && (
+        <p className="font-semibold text-red-500">Invalid passcode</p>
+      )}
+      <button
+        className="shadow-lg ml-4 bg-blue-500 py-1 px-4 rounded-full text-white"
+        type="submit"
+      >
         Get started
       </button>
     </form>

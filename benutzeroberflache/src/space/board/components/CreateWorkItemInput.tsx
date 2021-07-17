@@ -1,12 +1,14 @@
 import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
-import { State, WorkItem } from "../workItem";
 import { v4 as uuidv4 } from "uuid";
+import { State, WorkItem } from "../workItem";
 
 interface CreateWorkItemInputProps {
   onCreate: (workItem: WorkItem) => void;
 }
-export const CreateWorkItemInput: React.FC<CreateWorkItemInputProps> = ({ onCreate }) => {
+export const CreateWorkItemInput: React.FC<CreateWorkItemInputProps> = ({
+  onCreate,
+}) => {
   const [newWorkItemTitle, setNewWorkItemTitle] = useState("");
   const [editMode, setEditMode] = useState(false);
   const ref = useRef(null);
@@ -27,7 +29,12 @@ export const CreateWorkItemInput: React.FC<CreateWorkItemInputProps> = ({ onCrea
       className="mt-2 ml-2"
       onSubmit={(e) => {
         e.preventDefault();
-        onCreate({ id: uuidv4(), title: newWorkItemTitle, riskLevel: 0, state: State.TO_DO });
+        onCreate({
+          id: uuidv4(),
+          title: newWorkItemTitle,
+          riskLevel: 0,
+          state: State.TO_DO,
+        });
         closeEditor();
       }}
       ref={ref}
@@ -44,7 +51,10 @@ export const CreateWorkItemInput: React.FC<CreateWorkItemInputProps> = ({ onCrea
       </button>
     </form>
   ) : (
-    <div className="mt-2 py-2 px-2 mx-2 cursor-pointer" onClick={handleAddNewItemButtonClick}>
+    <div
+      className="mt-2 py-2 px-2 mx-2 cursor-pointer"
+      onClick={handleAddNewItemButtonClick}
+    >
       ➕ Add new work item
     </div>
   );

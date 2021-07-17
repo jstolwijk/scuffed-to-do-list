@@ -17,11 +17,20 @@ const toBgColor = (statusColor: Color): string => {
   }
 };
 
-export const RowWithStatusColor: React.FC<{ statusColor: Color }> = ({ statusColor, children }) => {
+export const RowWithStatusColor: React.FC<{ statusColor: Color }> = ({
+  statusColor,
+  children,
+}) => {
   return (
     <div className="flex">
-      <div className={"pl-2 py-4 mt-2 rounded-l shadow-lg " + toBgColor(statusColor)}></div>
-      <div className="p-4 rounded-r shadow-xl bg-white mt-2 w-full">{children}</div>
+      <div
+        className={
+          "pl-2 py-4 mt-2 rounded-l shadow-lg " + toBgColor(statusColor)
+        }
+      ></div>
+      <div className="p-4 rounded-r shadow-xl bg-white mt-2 w-full">
+        {children}
+      </div>
     </div>
   );
 };

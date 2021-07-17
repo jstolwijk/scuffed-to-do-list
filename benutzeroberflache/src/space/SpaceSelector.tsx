@@ -4,15 +4,19 @@ import { SpaceRoutes } from "./Router";
 import { useSocketRequest } from "./useSocketRequest";
 
 const SpaceSelector = () => {
-  const response = useSocketRequest("spaces");
+  const response = useSocketRequest<{ spaces: any[] } | null>("spaces");
 
   return (
     <div className="container mx-auto bg-gray-100">
       <h2 className="font-bold text-4xl">Good morning, $name</h2>
       <div className="mt-8">
         <TimelineSelector />
-        <RowWithStatusColor statusColor={Color.BLUE}>John has joined the team 🚀</RowWithStatusColor>
-        <RowWithStatusColor statusColor={Color.GREEN}>Jan completed cool work item 🎉</RowWithStatusColor>
+        <RowWithStatusColor statusColor={Color.BLUE}>
+          John has joined the team 🚀
+        </RowWithStatusColor>
+        <RowWithStatusColor statusColor={Color.GREEN}>
+          Jan completed cool work item 🎉
+        </RowWithStatusColor>
         <RowWithStatusColor statusColor={Color.RED}>
           "Design new website" has been blocked by a new dependency
         </RowWithStatusColor>

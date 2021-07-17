@@ -12,10 +12,10 @@ const inlineToolbarPlugin = createInlineToolbarPlugin();
 
 // The Editor accepts an array of plugins. In this case, only the inlineToolbarPlugin
 // is passed in, although it is possible to pass in multiple plugins.
-const MyEditor: React.FC<{ editorState: EditorState; onChange: (editorState: EditorState) => void }> = ({
-  editorState,
-  onChange,
-}) => (
+const MyEditor: React.FC<{
+  editorState: EditorState;
+  onChange: (editorState: EditorState) => void;
+}> = ({ editorState, onChange }) => (
   <div className="py-8">
     <Editor
       editorState={editorState}

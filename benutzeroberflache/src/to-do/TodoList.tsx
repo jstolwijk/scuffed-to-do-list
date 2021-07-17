@@ -20,7 +20,10 @@ function TodoList() {
   const [items, setItems] = useLocalStorage<Item[]>(toDoListId + "-items", []);
   const [newItemTitle, setNewItemTitle] = useState<string>("");
 
-  const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>("to-do-lists", []);
+  const [toDoLists, setTodoLists] = useLocalStorage<ToDoList[]>(
+    "to-do-lists",
+    []
+  );
   const listName = useMemo<string>(
     () => toDoLists?.find((item) => item.id === toDoListId)?.title ?? "",
     [toDoLists, toDoListId]
@@ -43,7 +46,15 @@ function TodoList() {
 
   const addItem = () => {
     console.log(newItemTitle);
-    const newItems = [...items!!, { id: uuidv4(), title: newItemTitle, completed: false, order: Date.now() }];
+    const newItems = [
+      ...items!!,
+      {
+        id: uuidv4(),
+        title: newItemTitle,
+        completed: false,
+        order: Date.now(),
+      },
+    ];
     setItems(newItems);
     setNewItemTitle("");
   };
@@ -97,7 +108,10 @@ function TodoList() {
             ></input>
           </div>
           <div className="col-start-12">
-            <button className="ml-2 border rounded bg-green-300 p-4 shadow" type="submit">
+            <button
+              className="ml-2 border rounded bg-green-300 p-4 shadow"
+              type="submit"
+            >
               Add item
             </button>
           </div>
@@ -110,7 +124,11 @@ function TodoList() {
         {itemsDone.length > 0 && (
           <div className="mt-4">
             <h2 className="text-2xl mb-4">Done 🎉</h2>
-            <ItemList items={itemsDone} toggleCompleted={toggleCompleted} removeItem={removeItem} />
+            <ItemList
+              items={itemsDone}
+              toggleCompleted={toggleCompleted}
+              removeItem={removeItem}
+            />
           </div>
         )}
       </div>
@@ -126,29 +144,44 @@ const ItemList: React.FC<{
   let { toDoListId } = useParams<{ toDoListId: string }>();
 
   // Sort ASC
-  const sortedItems = useMemo(() => [...items].sort((a, b) => (b.order > a.order ? 1 : -1)), [items]);
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => (b.order > a.order ? 1 : -1)),
+    [items]
+  );
 
   return (
     <div>
       <div>{children}</div>
       <ul>
         {sortedItems.map((item) => (
-          <li key={item.id} className="bg-white shadow-lg border rounded mb-2 p-4 flex">
+          <li
+            key={item.id}
+            className="bg-white shadow-lg border rounded mb-2 p-4 flex"
+          >
             <div className="mr-2">
               {!item.completed && (
-                <div className="border w-4 h-4 rounded-xl" onClick={() => toggleCompleted(item)}></div>
+                <div
+                  className="border w-4 h-4 rounded-xl"
+                  onClick={() => toggleCompleted(item)}
+                ></div>
               )}
               {item.completed && (
-                <CheckCircleIcon onClick={() => toggleCompleted(item)} className="h-5 w-5 text-green-500" />
+                <CheckCircleIcon
+                  onClick={() => toggleCompleted(item)}
+                  className="h-5 w-5 text-green-500"
+                />
               )}
             </div>
             <Link
               className="flex-1"
               to={{
-                pathname: generatePath(Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM, {
-                  toDoListId,
-                  itemId: item.id,
-                }),
+                pathname: generatePath(
+                  Routes.TO_DO_LIST + Routes.TO_DO_LIST_ITEM,
+                  {
+                    toDoListId,
+                    itemId: item.id,
+                  }
+                ),
               }}
             >
               <p>{item.title}</p>

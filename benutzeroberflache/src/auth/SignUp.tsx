@@ -36,7 +36,10 @@ const SignUp = () => {
             onChange={(e) => setEmail(e.target.value)}
           ></input>
           {!showPasscode && (
-            <button className="shadow-lg ml-4 block bg-blue-500 py-1 px-4 rounded-full text-white" type="submit">
+            <button
+              className="shadow-lg ml-4 block bg-blue-500 py-1 px-4 rounded-full text-white"
+              type="submit"
+            >
               Get started
             </button>
           )}

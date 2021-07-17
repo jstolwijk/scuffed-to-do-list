@@ -6,6 +6,7 @@ export enum State {
 
 export interface WorkItem {
   id: string;
+  shortId?: number;
   title: string;
   riskLevel: number;
   state: State;
