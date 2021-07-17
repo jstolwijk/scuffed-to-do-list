@@ -1,5 +1,5 @@
 import { generatePath, useHistory } from "react-router-dom";
-import { Routes } from "../App";
+import { Routes } from "../AppRouter";
 
 const DocumentHierarchy = () => {
   // const { data } = useSWR("http://localhost:3000/documents", fetcher);

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { Routes } from "../App";
+import { Routes } from "../AppRouter";
 import { Item } from "./TodoList";
 const Notes = lazy(() => import("./Notes"));
 

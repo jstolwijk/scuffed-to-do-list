@@ -1,7 +1,7 @@
 import MDEditor from "@uiw/react-md-editor";
 import { generatePath, Link } from "react-router-dom";
 import useSWR from "swr";
-import { Routes } from "../App";
+import { Routes } from "../AppRouter";
 
 const Zettelkasten = () => {
   return (

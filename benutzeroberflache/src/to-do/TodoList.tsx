@@ -3,7 +3,8 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { generatePath, Link, useParams } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { v4 as uuidv4 } from "uuid";
-import { PartyContext, Routes } from "../App";
+import { PartyContext } from "../App";
+import { Routes } from "../AppRouter";
 import { ToDoList } from "./Home";
 
 export interface Item {

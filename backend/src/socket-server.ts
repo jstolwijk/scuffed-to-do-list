@@ -207,6 +207,13 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("workItemStateChanged", { workItemId, newState });
   });
 
+  socket.on("getWorkItem", (data) => {
+    socket.emit(
+      "workItem",
+      workItems.find((workItem) => workItem.id === data.workItemId)
+    );
+  });
+
   socket.on("getWorkItems", (data) => {
     socket.emit("workItems", {
       todo: workItems,

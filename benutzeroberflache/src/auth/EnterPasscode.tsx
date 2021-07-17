@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import useDigitInput from "react-digit-input";
 import { useHistory } from "react-router-dom";
-import { Routes } from "../App";
+import { Routes } from "../AppRouter";
 
 enum PasscodeStatus {
   INIT,

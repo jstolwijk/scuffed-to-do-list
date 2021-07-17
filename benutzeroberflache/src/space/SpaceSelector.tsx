@@ -1,22 +1,7 @@
-import { useEffect, useState } from "react";
 import { generatePath, Link } from "react-router-dom";
-import socket from "../Socket";
 import { Color, RowWithStatusColor } from "./components/RowWithStatusColor";
 import { SpaceRoutes } from "./Router";
-
-const capitalizeFirstLetter = (s: string) => {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
-const useSocketRequest = (eventName: string) => {
-  const [response, setResponse] = useState<any | null>(null);
-  useEffect(() => {
-    socket.emit("get" + capitalizeFirstLetter(eventName));
-    socket.on(eventName, setResponse);
-  }, [eventName]);
-
-  return response;
-};
+import { useSocketRequest } from "./useSocketRequest";
 
 const SpaceSelector = () => {
   const response = useSocketRequest("spaces");
@@ -42,7 +27,7 @@ const SpaceSelector = () => {
                   name: space.name,
                 }),
               }}
-              className="block p-4 rounded shadow-lg bg-white mt-2 flex"
+              className="p-4 rounded shadow-lg bg-white mt-2 flex"
             >
               <p className="font-semibold">{space.title}</p>
               <span className="px-1"></span>
