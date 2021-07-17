@@ -28,6 +28,7 @@ export const useSocketRequest = <T>(eventName: string, data?: any): T => {
       requestId,
       ...data,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventName, JSON.stringify(data)]);
 
   return response;
