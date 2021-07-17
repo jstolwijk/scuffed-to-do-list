@@ -16,14 +16,14 @@ const reorder = (list: WorkItem[], startIndex: number, endIndex: number): WorkIt
 const move = (
   source: WorkItem[],
   destination: WorkItem[],
-  droppableSource: DraggableLocation,
-  droppableDestination: DraggableLocation
+  sourceIndex: number,
+  destinationIndex: number
 ): { source: WorkItem[]; dest: WorkItem[] } => {
   const sourceClone = Array.from(source);
   const destClone = Array.from(destination);
-  const [removed] = sourceClone.splice(droppableSource.index, 1);
+  const [removed] = sourceClone.splice(sourceIndex, 1);
 
-  destClone.splice(droppableDestination.index, 0, removed);
+  destClone.splice(destinationIndex, 0, removed);
 
   return { source: sourceClone, dest: destClone };
 };
@@ -36,34 +36,60 @@ const appendWorkItem = (workItem: WorkItem, state: WorkItem[][]): WorkItem[][] =
   return newState;
 };
 
+const droppableIdToState = (n: number): State => {
+  if (n > 2) {
+    throw new Error("Droppable id bigger than 2: " + n);
+  }
+  return [State.TO_DO, State.IN_PROGRESS, State.DONE][n]!;
+};
+
 function Page() {
   const [state, setState] = useState<WorkItem[][]>([[], [], []]);
 
   useEffect(() => {
-    (async () => {
-      if (!socket.connected) {
-        await socket.connect();
-        console.log("Connected");
-      }
-      socket.on("workItemCreated", (workItem: WorkItem) => {
-        console.log("New work item created. ", workItem);
+    socket.on("workItemCreated", (workItem: WorkItem) => {
+      console.log("New work item created. ", workItem);
 
-        setState((old) => appendWorkItem(workItem, old));
+      setState((old) => appendWorkItem(workItem, old));
+    });
+    socket.on("workItemStateChanged", ({ workItemId, oldState, newState }) => {
+      setState((old) => {
+        const oldColIdx = Object.values(State).findIndex((s) => s === oldState);
+        const newColIdx = Object.values(State).findIndex((s) => s === newState);
+
+        console.log("oldColIdx", oldColIdx);
+        console.log("newColIdx", newColIdx);
+        console.log("state", old);
+
+        const workItemCurrentId = old[oldColIdx].findIndex((wi) => wi.id === workItemId);
+
+        if (workItemCurrentId < 0) {
+          return old;
+        }
+
+        const result = move(old[oldColIdx], old[newColIdx], workItemCurrentId, old[newColIdx].length);
+
+        const newColState = [...old];
+        newColState[oldColIdx] = result.source;
+        newColState[newColIdx] = result.dest;
+
+        return newColState;
       });
-      socket.on("workItems", (fetchedItems: any) => {
-        setState([
-          fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.TO_DO),
-          fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.IN_PROGRESS),
-          fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.DONE),
-        ]);
-      });
-      await socket.emit("getWorkItems", "");
-      console.log("done");
-    })();
+    });
+    socket.on("workItems", (fetchedItems: any) => {
+      setState([
+        fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.TO_DO),
+        fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.IN_PROGRESS),
+        fetchedItems.todo.filter((workItem: WorkItem) => workItem.state === State.DONE),
+      ]);
+    });
+    socket.emit("getWorkItems", "");
   }, []);
 
   function onDragEnd(result: DropResult) {
     const { source, destination } = result;
+    console.log("Source: ", source);
+    console.log("Destination: ", destination);
 
     // dropped outside the list
     if (!destination) {
@@ -79,11 +105,17 @@ function Page() {
       newState[sInd] = items;
       setState(newState);
     } else {
-      const result = move(state[sInd], state[dInd], source, destination);
+      const result = move(state[sInd], state[dInd], source.index, destination.index);
       const newState = [...state];
       newState[sInd] = result.source;
       newState[dInd] = result.dest;
       setState(newState);
+
+      socket.emit("changeWorkItemState", {
+        workItemId: state[sInd][source.index].id,
+        oldState: droppableIdToState(sInd) as State,
+        newState: droppableIdToState(dInd) as State,
+      });
     }
   }
 

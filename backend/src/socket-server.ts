@@ -187,24 +187,18 @@ io.on("connection", (socket) => {
     });
   });
 
-  socket.on("editDocument", (data) => {
-    console.log("editDocument");
-    socket.broadcast.emit("documentChanged", data);
-  });
-
   socket.on("createWorkItem", (workItem) => {
     workItems = [workItem, ...workItems];
 
     socket.broadcast.emit("workItemCreated", workItem);
   });
 
-  socket.on("changeWorkItemState", ({ workItemId, newState }) => {
+  socket.on("changeWorkItemState", ({ workItemId, oldState, newState }) => {
     console.log("changeWorkItemState", workItemId, newState);
     const wiId = workItems.findIndex((wi) => wi.id === workItemId);
     workItems[wiId] = { ...workItems[wiId], state: newState };
 
-    socket.emit("workItemStateChanged", { workItemId, newState });
-    socket.broadcast.emit("workItemStateChanged", { workItemId, newState });
+    socket.broadcast.emit("workItemStateChanged", { workItemId, oldState, newState });
   });
 
   socket.on("getWorkItem", (data) => {
