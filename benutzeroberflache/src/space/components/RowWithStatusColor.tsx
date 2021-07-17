@@ -4,10 +4,6 @@ export enum Color {
   BLUE = "BLUE",
 }
 
-interface RowWithStatusColor {
-  statusColor: Color;
-}
-
 const toBgColor = (statusColor: Color): string => {
   switch (statusColor) {
     case Color.RED:
@@ -21,7 +17,7 @@ const toBgColor = (statusColor: Color): string => {
   }
 };
 
-export const RowWithStatusColor: React.FC<RowWithStatusColor> = ({ statusColor, children }) => {
+export const RowWithStatusColor: React.FC<{ statusColor: Color }> = ({ statusColor, children }) => {
   return (
     <div className="flex">
       <div className={"pl-2 py-4 mt-2 rounded-l shadow-lg " + toBgColor(statusColor)}></div>

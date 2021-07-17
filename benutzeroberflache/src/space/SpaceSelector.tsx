@@ -1,4 +1,3 @@
-import { eventNames } from "process";
 import { useEffect, useState } from "react";
 import { generatePath, Link } from "react-router-dom";
 import socket from "../Socket";
@@ -14,15 +13,9 @@ const useSocketRequest = (eventName: string) => {
   useEffect(() => {
     socket.emit("get" + capitalizeFirstLetter(eventName));
     socket.on(eventName, setResponse);
-  }, []);
+  }, [eventName]);
 
   return response;
-};
-
-const useSocketConsumer = (eventName: string, onDataReceived: (data: any) => void) => {
-  useEffect(() => {
-    socket.on(eventName, onDataReceived);
-  }, []);
 };
 
 const SpaceSelector = () => {
