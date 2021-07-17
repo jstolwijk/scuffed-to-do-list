@@ -119,8 +119,6 @@ const documentExists = async (docId: string): Promise<boolean> => {
   return true;
 };
 
-const clients = [];
-
 enum State {
   TO_DO = "TO_DO",
   IN_PROGRESS = "IN_PROGRESS",
@@ -147,21 +145,21 @@ let workItems: WorkItem[] = [
     state: State.TO_DO,
     shortId: 1,
     blockedBy: [],
-    blocks: [secondId],
+    blocks: [],
   },
   {
     id: secondId,
     title: "Qui quia aliquid ea facere non occaecati sequi.",
-    riskLevel: 4,
+    riskLevel: 0,
     state: State.TO_DO,
     shortId: 2,
-    blockedBy: [firstId],
+    blockedBy: [],
     blocks: [],
   },
   {
     id: uuidv4(),
     title: "Unde maxime praesentium.",
-    riskLevel: 2,
+    riskLevel: 0,
     state: State.TO_DO,
     shortId: 3,
     blockedBy: [],
@@ -170,7 +168,7 @@ let workItems: WorkItem[] = [
   {
     id: uuidv4(),
     title: "Refactor all the things",
-    riskLevel: 2,
+    riskLevel: 0,
     state: State.TO_DO,
     shortId: 4,
     blockedBy: [],
@@ -179,7 +177,7 @@ let workItems: WorkItem[] = [
   {
     id: uuidv4(),
     title: "Follow cursor",
-    riskLevel: 2,
+    riskLevel: 0,
     state: State.TO_DO,
     shortId: 5,
     blockedBy: [],
@@ -197,13 +195,32 @@ let workItems: WorkItem[] = [
   {
     id: uuidv4(),
     title: "Design website",
-    riskLevel: 2,
+    riskLevel: 0,
     state: State.TO_DO,
     shortId: 7,
     blockedBy: [],
     blocks: [],
   },
 ];
+
+app.post("/work-items/search", (req, res) => {
+  const { query } = req.body;
+
+  const first = workItems.filter(
+    (workItem) =>
+      workItem.shortId.toString().startsWith(query) || workItem.title.toLowerCase().startsWith(query.toLowerCase())
+  );
+
+  if (first.length > 0) {
+    res.send({ workItems: first });
+    return;
+  }
+  const responseBody = {
+    workItems: workItems.filter((workItem) => workItem.title.toLowerCase().includes(query.toLowerCase())),
+  };
+
+  res.send(responseBody);
+});
 
 io.on("connection", (socket) => {
   console.log("a user connected");
@@ -222,24 +239,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createWorkItem", (workItem) => {
-    workItems = [{ ...workItem, shortId: workItems.length }, ...workItems];
+    workItems = [{ ...workItem, shortId: workItems.length, blocks: [], blockedBy: [] }, ...workItems];
 
     socket.broadcast.emit("workItemCreated", workItem);
-  });
-
-  socket.on("blockWorkItem", ({ workItemId, blockedByWorkItemId }) => {
-    const idx = workItems.findIndex((workItem) => workItem.id === workItemId);
-
-    workItems[idx] = { ...workItems[idx], blockedBy: [...workItems[idx].blockedBy, blockedByWorkItemId] };
-
-    const blockedByIdx = workItems.findIndex((workItem) => workItem.id === workItemId);
-
-    workItems[blockedByIdx] = {
-      ...workItems[blockedByIdx],
-      blocks: [...workItems[blockedByIdx].blocks, workItemId],
-    };
-
-    socket.broadcast.emit("workItemBlocked", { workItemId, blockedByWorkItemId });
   });
 
   socket.on("changeWorkItemState", ({ workItemId, oldState, newState }) => {
@@ -247,7 +249,39 @@ io.on("connection", (socket) => {
     const wiId = workItems.findIndex((wi) => wi.id === workItemId);
     workItems[wiId] = { ...workItems[wiId], state: newState };
 
+    if (newState === "DONE") {
+      const blockedWorkItems = workItems[wiId].blocks.map((id: string) => workItems.find((wi) => wi.id === id));
+
+      const yes = blockedWorkItems.filter((wi) => wi.blockedBy.length === 1);
+
+      yes.forEach((wi) => {
+        const idx = workItems.findIndex((w) => w.id === wi.id);
+        workItems[idx] = { ...wi, riskLevel: workItems[idx].riskLevel - 3 };
+      });
+    }
+
     socket.broadcast.emit("workItemStateChanged", { workItemId, oldState, newState });
+  });
+
+  socket.on("blockWorkItem", ({ workItemId, blockedByWorkItemId }) => {
+    console.log("blockWorkItem", workItemId);
+    const idx = workItems.findIndex((workItem) => workItem.id === workItemId)!;
+    const blockedByIdx = workItems.findIndex((workItem) => workItem.id === blockedByWorkItemId)!;
+
+    workItems[idx] = {
+      ...workItems[idx],
+      riskLevel: Math.min(workItems[idx].riskLevel + 3, 4),
+      blockedBy: [...workItems[idx].blockedBy, workItems[blockedByIdx].id],
+    };
+
+    workItems[blockedByIdx] = {
+      ...workItems[blockedByIdx],
+      blocks: [...workItems[blockedByIdx].blocks, workItems[idx].id],
+    };
+
+    console.log(JSON.stringify(workItems, null, 2));
+
+    socket.broadcast.emit("workItemBlocked", { workItemId, blockedByWorkItemId });
   });
 
   socket.on("getWorkItem", ({ requestId, ...rest }) => {
@@ -259,11 +293,13 @@ io.on("connection", (socket) => {
         id: workItemId,
         title: workItems.find((wi) => wi.id === workItemId).title,
         shortId: workItems.find((wi) => wi.id === workItemId).shortId,
+        state: workItems.find((wi) => wi.id === workItemId).state,
       })),
       blocks: workItem.blocks.map((workItemId) => ({
         id: workItemId,
         title: workItems.find((wi) => wi.id === workItemId).title,
         shortId: workItems.find((wi) => wi.id === workItemId).shortId,
+        state: workItems.find((wi) => wi.id === workItemId).state,
       })),
     });
   });
