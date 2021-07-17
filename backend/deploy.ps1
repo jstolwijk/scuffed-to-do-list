@@ -4,7 +4,7 @@ scp 'C:\Users\Jesse\Projects\idea-box\backend\*.json' root@188.166.27.58:~/app/
 Write-Output "Files transferred to target machine"
 ssh root@188.166.27.58 "cd ~/app && npm install && npm run build"
 Write-Output "Application built"
-ssh root@188.166.27.58 "pm2 stop index"
+ssh root@188.166.27.58 "pm2 stop socket-server"
 ssh root@188.166.27.58 "pm2 start ~/app/dist/socket-server.js"
 Write-Output ""
 Write-Output "Application started"

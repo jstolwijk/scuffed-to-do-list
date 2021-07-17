@@ -3,7 +3,7 @@ import Confetti from "react-confetti";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { useWindowSize } from "react-use";
 import SignUp from "./auth/SignUp";
-import Board from "./task-tracker/Board";
+import { SpaceRouter } from "./space/Router";
 import Home from "./to-do/Home";
 import TodoList from "./to-do/TodoList";
 import ToDoListItem from "./to-do/ToDoListItem";
@@ -19,7 +19,7 @@ export enum Routes {
   EDIT_IDEA = "/edit-idea/:ideaId",
   SIGN_UP = "/sign-up",
   ENTER_PASSCODE = "/enter-passcode",
-  BOARD = "/board",
+  SPACE = "/space",
 }
 
 export const PartyContext = createContext(() => {});
@@ -45,9 +45,10 @@ function App() {
               height={height}
             />
           )}
+
           <Switch>
-            <Route path={Routes.BOARD}>
-              <Board />
+            <Route path={Routes.SPACE}>
+              <SpaceRouter />
             </Route>
             <div className="mx-auto container">
               <Route path={Routes.SIGN_UP}>
@@ -68,10 +69,10 @@ function App() {
               <Route path={Routes.EDIT_IDEA}>
                 <DocumentEditor />
               </Route>
-              <Route path={Routes.HOME}>
+              <Route path={Routes.HOME} exact>
                 <Redirect to={Routes.TO_DOS} />
               </Route>
-              <Route path="/">
+              <Route path="/" exact>
                 <Redirect to={Routes.TO_DOS} />
               </Route>
             </div>

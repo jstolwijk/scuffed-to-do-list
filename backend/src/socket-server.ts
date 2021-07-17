@@ -16,7 +16,7 @@ const THIRTY_MINUTES = 30 * 60000;
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "https://shittytestdomain.xyz", "https://www.shittytestdomain.xyz"],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -178,22 +178,24 @@ io.on("connection", (socket) => {
     console.log(data);
   });
 
+  socket.on("getSpaces", () => {
+    socket.emit("spaces", {
+      spaces: [
+        { name: "jesse", title: "Jesse", description: "Tracking personal progress" },
+        { name: "test-space", title: "Test space", description: "Testing" },
+      ],
+    });
+  });
+
   socket.on("editDocument", (data) => {
     console.log("editDocument");
     socket.broadcast.emit("documentChanged", data);
   });
 
-  socket.on("mouseLocationUpdated", ({ docX, docY }) => {
-    socket.broadcast.emit("mouseLocationUpdated", { docX, docY });
-  });
+  socket.on("createWorkItem", (workItem) => {
+    workItems = [workItem, ...workItems];
 
-  socket.on("createWorkItem", (data) => {
-    const newWorkItem = { title: data.title, id: uuidv4(), riskLevel: 0, state: State.TO_DO };
-
-    workItems = [newWorkItem, ...workItems];
-
-    socket.emit("workItemCreated", newWorkItem);
-    socket.broadcast.emit("workItemCreated", newWorkItem);
+    socket.broadcast.emit("workItemCreated", workItem);
   });
 
   socket.on("changeWorkItemState", ({ workItemId, newState }) => {
