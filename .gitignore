@@ -30,3 +30,7 @@ dist
 backend/authentication
 # Local Netlify folder
 .netlify
+
+# Ignore secrets
+config.ts
+config.js

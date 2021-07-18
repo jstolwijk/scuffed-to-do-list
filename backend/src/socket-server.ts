@@ -6,6 +6,8 @@ import PouchDB from "pouchdb";
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 import cors from "cors";
+import mail, { MailDataRequired } from "@sendgrid/mail";
+import { config } from "./config";
 
 const app = express();
 const server = http.createServer(app);
@@ -49,9 +51,68 @@ interface PasscodeDto {
   expiresAt: number;
 }
 
+const sendSignUpMail = async (passcode: string, email: string): Promise<void> => {
+  mail.setApiKey(config.SENDGRID_API_KEY);
+  const msg: MailDataRequired = {
+    to: email,
+    from: "hello@shittytestdomain.xyz",
+    templateId: "d-c47dd35dded24357b3c30d39dd4d5ba3",
+    dynamicTemplateData: {
+      firstName: email,
+      passcode,
+    },
+  };
+  await mail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+const sendSignInMail = async (passcode: string, email: string): Promise<void> => {
+  mail.setApiKey(config.SENDGRID_API_KEY);
+  const msg: MailDataRequired = {
+    to: email,
+    from: "hello@shittytestdomain.xyz",
+    templateId: "d-c12a972068bb4672a0bfb3d0a5710998",
+    dynamicTemplateData: {
+      firstName: email,
+      passcode,
+    },
+  };
+  await mail
+    .send(msg)
+    .then(() => {
+      console.log("Email sent");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+const generateAndStorePasscode = async (email: string): Promise<PasscodeDto> => {
+  const passcode = generatePasscode();
+
+  // key: passcode:email:passcode value: expiry date
+  const passcodeDto: PasscodeDto = {
+    _id: `passcode|${email}|${passcode}`,
+    expiresAt: Date.now() + THIRTY_MINUTES,
+    passcode,
+    alreadyUsed: false,
+  };
+
+  await authenticationDb.put(passcodeDto);
+
+  return passcodeDto;
+};
+
 app.post("/sign-up", async (req, res) => {
   // validate input
   const { email, name } = req.body;
+  console.log("sign-up request " + email);
 
   if (await documentExists("auth:" + email)) {
     res.sendStatus(500);
@@ -60,27 +121,37 @@ app.post("/sign-up", async (req, res) => {
 
     console.log("Created user: " + email);
 
-    const passcode = generatePasscode();
+    const passcodeDto = await generateAndStorePasscode(email);
 
-    // key: passcode:email:passcode value: expiry date
-    const passcodeDto: PasscodeDto = {
-      _id: `passcode|${email}|${passcode}`,
-      expiresAt: Date.now() + THIRTY_MINUTES,
-      passcode,
-      alreadyUsed: false,
-    };
-
-    await authenticationDb.put(passcodeDto);
-
-    sendMail(passcode);
+    sendSignUpMail(passcodeDto.passcode, email);
 
     res.status(201);
     res.send({ expiresAt: passcodeDto.expiresAt });
+    console.log("sign-up mail sent " + email);
   }
 });
 
 app.post("/sign-in", async (req, res) => {
+  const { email } = req.body;
+  console.log("sign-in request " + email);
+
+  if (await documentExists("auth:" + email)) {
+    const passcodeDto = await generateAndStorePasscode(email);
+
+    sendSignInMail(passcodeDto.passcode, email);
+
+    res.status(201);
+    res.send({ expiresAt: passcodeDto.expiresAt });
+    console.log("sign-in mail sent " + email);
+  } else {
+    res.sendStatus(404);
+    console.log("sign-in failed " + email);
+  }
+});
+
+app.post("/validate-passcode", async (req, res) => {
   const { email, passcode } = req.body;
+  console.log("validate-passcode request " + email);
 
   let passcodeDto: PasscodeDto | null = null;
   try {
@@ -100,16 +171,13 @@ app.post("/sign-in", async (req, res) => {
   } else {
     await authenticationDb.put({ ...passcodeDto, alreadyUsed: true });
     res.sendStatus(202);
+    console.log("validate-passcode succeeded " + email);
   }
 });
 
 const generatePasscode = (): string => {
   const randomNumber = crypto.randomInt(0, 1000000);
   return randomNumber.toString().padStart(6, "0");
-};
-
-const sendMail = (code: string) => {
-  console.log("Code " + code);
 };
 
 const documentExists = async (docId: string): Promise<boolean> => {

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import EnterPasscode from "./EnterPasscode";
 
-const SignUp = () => {
+const SignIn = () => {
   const [email, setEmail] = useState("");
   const [showPasscode, setShowpasscode] = useState(false);
 
-  const signUp = async () => {
-    const response = await fetch(process.env.REACT_APP_BACKEND_BASE_URL + "/sign-up", {
+  const signIn = async () => {
+    const response = await fetch(process.env.REACT_APP_BACKEND_BASE_URL + "/sign-in", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: { "Content-Type": "application/json" },
@@ -19,12 +19,12 @@ const SignUp = () => {
 
   return (
     <div className="pt-16 flex flex-col justify-center text-center">
-      <h1 className="text-2xl font-semibold">Sign up</h1>
+      <h1 className="text-2xl font-semibold">Sign in</h1>
       <form
         className="flex-1 flex justify-center pt-8"
         onSubmit={(e) => {
           e.preventDefault();
-          signUp();
+          signIn();
         }}
       >
         <input
@@ -36,7 +36,7 @@ const SignUp = () => {
         ></input>
         {!showPasscode && (
           <button className="shadow-lg ml-4 block bg-blue-500 py-1 px-4 rounded-full text-white" type="submit">
-            Get started
+            Sign in
           </button>
         )}
       </form>
@@ -53,4 +53,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
