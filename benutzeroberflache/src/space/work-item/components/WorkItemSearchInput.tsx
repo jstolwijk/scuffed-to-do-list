@@ -17,11 +17,14 @@ export const WorkItemSearchInput: FC<{
   const [value, setValue] = useState<string>("");
 
   const onSuggestionsFetchRequested = async (prop: any) => {
-    const response = await fetch("https://backend.shittytestdomain.xyz/work-items/search", {
-      method: "POST",
-      body: JSON.stringify({ query: prop.value }),
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_BASE_URL + "/work-items/search",
+      {
+        method: "POST",
+        body: JSON.stringify({ query: prop.value }),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     const body: any = await response.json();
 
@@ -39,13 +42,17 @@ export const WorkItemSearchInput: FC<{
   const onChange = (_: React.FormEvent<HTMLElement>, params: ChangeEvent) => {
     const matches = params.newValue.match(regex);
     if (matches) {
-      const match = suggestions.find((suggestion) => suggestion.shortId.toString() === matches[1]);
+      const match = suggestions.find(
+        (suggestion) => suggestion.shortId.toString() === matches[1]
+      );
       if (match) {
         handleWorkItemIdChange(match.id);
       } else {
         console.error(
           "Unable to match input with suggestion matches: ",
-          JSON.stringify(matches) + " suggestions " + JSON.stringify(suggestions)
+          JSON.stringify(matches) +
+            " suggestions " +
+            JSON.stringify(suggestions)
         );
       }
     }
@@ -57,7 +64,9 @@ export const WorkItemSearchInput: FC<{
       suggestions={suggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={(suggestion) => "#" + suggestion.shortId + " - " + suggestion.title}
+      getSuggestionValue={(suggestion) =>
+        "#" + suggestion.shortId + " - " + suggestion.title
+      }
       renderSuggestion={RenderSuggestion}
       inputProps={{
         placeholder: "Search for a work item",

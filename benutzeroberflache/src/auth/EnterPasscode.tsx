@@ -24,11 +24,14 @@ const EnterPasscode: React.FC<{ email: string }> = ({ email }) => {
   const checkPasscode = useCallback(async () => {
     setFirstCheck(false);
     try {
-      const response = await fetch("http://localhost:3000/sign-in", {
-        method: "POST",
-        body: JSON.stringify({ passcode, email }),
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await fetch(
+        process.env.REACT_APP_BACKEND_BASE_URL + "/sign-in",
+        {
+          method: "POST",
+          body: JSON.stringify({ passcode, email }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (response.ok) {
         setPasscodeStatus(PasscodeStatus.VALID);

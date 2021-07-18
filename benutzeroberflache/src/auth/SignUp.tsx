@@ -6,11 +6,14 @@ const SignUp = () => {
   const [showPasscode, setShowpasscode] = useState(false);
 
   const signUp = async () => {
-    const response = await fetch("http://localhost:3000/sign-up", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await fetch(
+      process.env.REACT_APP_BACKEND_BASE_URL + "/sign-up",
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
     if (response.ok) {
       setShowpasscode(true);

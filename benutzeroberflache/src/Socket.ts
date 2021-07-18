@@ -1,8 +1,8 @@
 import { io } from "socket.io-client";
 
-const URL = "https://backend.shittytestdomain.xyz";
-// const URL = "http://localhost:8080";
-const socket = io(URL, { autoConnect: true });
+const socket = io(process.env.REACT_APP_BACKEND_BASE_URL as string, {
+  autoConnect: true,
+});
 
 socket.onAny((event, ...args) => {
   console.log(event, args);
