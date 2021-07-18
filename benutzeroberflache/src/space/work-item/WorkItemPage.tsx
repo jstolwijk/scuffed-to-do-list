@@ -1,20 +1,20 @@
 import { XIcon } from "@heroicons/react/solid";
-import React, { FC, useEffect, useState } from "react";
-import Autosuggest, { ChangeEvent } from "react-autosuggest";
+import { FC, useEffect } from "react";
 import { generatePath, Link, useHistory, useParams } from "react-router-dom";
 import socket from "../../Socket";
 import { State, WorkItem } from "../board/workItem";
 import { SpaceRoutes } from "../Router";
 import { useSocketRequest } from "../useSocketRequest";
+import { CreateRelationInput } from "./components/CreateRelationInput";
 
-interface WorkItemSummary {
+export interface WorkItemSummary {
   id: string;
   title: string;
   shortId: number;
   state: State;
 }
 
-enum RelationType {
+export enum RelationType {
   BLOCKED_BY = "BLOCKED_BY",
   BLOCKS = "BLOCKS",
 }
@@ -25,8 +25,7 @@ interface ExtendedWorkItem extends WorkItem {
 }
 
 export const WorkItemPage = () => {
-  const { workItemId, name } =
-    useParams<{ workItemId: string; name: string }>();
+  const { workItemId, name } = useParams<{ workItemId: string; name: string }>();
   const history = useHistory();
   const response = useSocketRequest<ExtendedWorkItem | null>("workItem", {
     workItemId,
@@ -64,18 +63,10 @@ export const WorkItemPage = () => {
           <CreateRelationInput workItemId={workItemId} />
           <div className="pt-8 divide-y">
             {response.blockedBy.map((workItem) => (
-              <RelationItem
-                workItem={workItem}
-                relationType={RelationType.BLOCKED_BY}
-                spaceName={name}
-              />
+              <RelationItem workItem={workItem} relationType={RelationType.BLOCKED_BY} spaceName={name} />
             ))}
             {response.blocks.map((workItem) => (
-              <RelationItem
-                workItem={workItem}
-                relationType={RelationType.BLOCKS}
-                spaceName={name}
-              />
+              <RelationItem workItem={workItem} relationType={RelationType.BLOCKS} spaceName={name} />
             ))}
           </div>
         </div>
@@ -104,134 +95,10 @@ const RelationItem: FC<{
       }}
       className="p-2 flex"
     >
-      <div className="w-24 font-bold">
-        {relationType === RelationType.BLOCKED_BY ? "Blocked by" : "Blocks"}
-      </div>{" "}
-      #
+      <div className="w-24 font-bold">{relationType === RelationType.BLOCKED_BY ? "Blocked by" : "Blocks"}</div> #
       <p className={workItem.state === State.DONE ? "line-through" : ""}>
         {workItem.shortId} - {workItem.title} - {workItem.state}
       </p>
     </Link>
-  );
-};
-
-const CreateRelationInput: FC<{ workItemId: string }> = ({ workItemId }) => {
-  const [relationType, setRelationType] = useState(RelationType.BLOCKED_BY);
-  const [searchWorkItemId, setWorkItemId] = useState<string>("");
-
-  return (
-    <form
-      className="flex"
-      onSubmit={(e) => {
-        e.preventDefault();
-        socket.emit("blockWorkItem", {
-          workItemId:
-            relationType === RelationType.BLOCKED_BY
-              ? workItemId
-              : searchWorkItemId,
-          blockedByWorkItemId:
-            relationType === RelationType.BLOCKED_BY
-              ? searchWorkItemId
-              : workItemId,
-        });
-      }}
-    >
-      <RelationTypeSelector
-        value={relationType}
-        handleChange={setRelationType}
-      />
-      <WorkItemSearchInput handleWorkItemIdChange={setWorkItemId} />
-      <button className="p-2 bg-blue-500 rounded" type="submit">
-        Create relation
-      </button>
-    </form>
-  );
-};
-
-const RelationTypeSelector: React.FC<{
-  value: RelationType;
-  handleChange: (value: RelationType) => void;
-}> = ({ value, handleChange }) => {
-  return (
-    <select
-      value={value}
-      onChange={(e) => handleChange(e.target.value as RelationType)}
-    >
-      <option value={RelationType.BLOCKED_BY}>Blocked by</option>
-      <option value={RelationType.BLOCKS}>Blocks</option>
-    </select>
-  );
-};
-
-const RenderSuggestion = (suggestion: WorkItemSummary) => (
-  <div className="cursor-pointer bg-white rounded border">
-    #{suggestion.shortId} - {suggestion.title} - {suggestion.state}
-  </div>
-);
-
-const WorkItemSearchInput: FC<{
-  handleWorkItemIdChange: (value: string) => void;
-}> = ({ handleWorkItemIdChange }) => {
-  const [suggestions, setSuggestions] = useState<WorkItemSummary[]>([]);
-  const [value, setValue] = useState<string>("");
-
-  const onSuggestionsFetchRequested = async (prop: any) => {
-    const response = await fetch(
-      "https://backend.shittytestdomain.xyz/work-items/search",
-      {
-        method: "POST",
-        body: JSON.stringify({ query: prop.value }),
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-
-    const body: any = await response.json();
-
-    console.log(body);
-
-    if (response.ok) {
-      setSuggestions(body.workItems);
-    }
-  };
-
-  const onSuggestionsClearRequested = () => {
-    setSuggestions([]);
-  };
-
-  const regex = /#([0-9]+) - .*/;
-  const onChange = (_: React.FormEvent<HTMLElement>, params: ChangeEvent) => {
-    const matches = params.newValue.match(regex);
-    if (matches) {
-      const match = suggestions.find(
-        (suggestion) => suggestion.shortId.toString() === matches[1]
-      );
-      if (match) {
-        handleWorkItemIdChange(match.id);
-      } else {
-        console.error(
-          "Unable to match input with suggestion matches: ",
-          JSON.stringify(matches) +
-            " suggestions " +
-            JSON.stringify(suggestions)
-        );
-      }
-    }
-    setValue(params.newValue);
-  };
-  return (
-    <Autosuggest
-      suggestions={suggestions}
-      onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-      onSuggestionsClearRequested={onSuggestionsClearRequested}
-      getSuggestionValue={(suggestion) =>
-        "#" + suggestion.shortId + " - " + suggestion.title
-      }
-      renderSuggestion={RenderSuggestion}
-      inputProps={{
-        placeholder: "Search for a work item",
-        value,
-        onChange,
-      }}
-    />
   );
 };
