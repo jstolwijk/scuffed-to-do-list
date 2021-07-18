@@ -11,12 +11,8 @@ const SpaceSelector = () => {
       <h2 className="font-bold text-4xl">Good morning, $name</h2>
       <div className="mt-8">
         <TimelineSelector />
-        <RowWithStatusColor statusColor={Color.BLUE}>
-          John has joined the team 🚀
-        </RowWithStatusColor>
-        <RowWithStatusColor statusColor={Color.GREEN}>
-          Jan completed cool work item 🎉
-        </RowWithStatusColor>
+        <RowWithStatusColor statusColor={Color.BLUE}>John has joined the team 🚀</RowWithStatusColor>
+        <RowWithStatusColor statusColor={Color.GREEN}>Jan completed cool work item 🎉</RowWithStatusColor>
         <RowWithStatusColor statusColor={Color.RED}>
           "Design new website" has been blocked by a new dependency
         </RowWithStatusColor>
@@ -47,7 +43,7 @@ const SpaceSelector = () => {
 const TimelineSelector = () => {
   return (
     <select className="text-xl font-semibold bg-gray-100">
-      <option>Revent events</option>
+      <option>Recent events</option>
       <option>Summary of yesterday</option>
       <option>Summary of last week</option>
     </select>

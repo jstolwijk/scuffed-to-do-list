@@ -10,11 +10,7 @@ interface WorkItemProps {
   snapshot: DraggableStateSnapshot;
 }
 
-export const WorkItemTile: React.FC<WorkItemProps> = ({
-  provided,
-  snapshot,
-  item,
-}) => {
+export const WorkItemTile: React.FC<WorkItemProps> = ({ provided, snapshot, item }) => {
   const { name } = useParams<{ name: string }>();
   console.log("Drag", snapshot.isDragging);
   return (
@@ -32,11 +28,11 @@ export const WorkItemTile: React.FC<WorkItemProps> = ({
           }),
         }}
       >
-        <RowWithStatusColor
-          statusColor={item.riskLevel > 1 ? Color.RED : Color.GREEN}
-        >
+        <RowWithStatusColor statusColor={item.riskLevel > 1 ? Color.RED : Color.GREEN}>
           <div className="flex content-around">
-            <h3 className="font-semibold text-xl">{item.title}</h3>
+            <h3 className="font-semibold text-xl">
+              #{item.shortId} {item.title}
+            </h3>
           </div>
         </RowWithStatusColor>
       </Link>

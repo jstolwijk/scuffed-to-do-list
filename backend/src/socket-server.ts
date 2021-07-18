@@ -309,29 +309,29 @@ io.on("connection", (socket) => {
     socket.emit("workItem", {
       requestId,
       ...workItem,
-      blockedBy: workItem.blockedBy.map((workItemId) => ({
-        id: workItemId,
-        title: workItems.find((wi) => wi.id === workItemId).title,
-        shortId: workItems.find((wi) => wi.id === workItemId).shortId,
-        state: workItems.find((wi) => wi.id === workItemId).state,
-      })),
-      blocks: workItem.blocks.map((workItemId) => ({
-        id: workItemId,
-        title: workItems.find((wi) => wi.id === workItemId).title,
-        shortId: workItems.find((wi) => wi.id === workItemId).shortId,
-        state: workItems.find((wi) => wi.id === workItemId).state,
-      })),
+      blockedBy: workItem.blockedBy.map(toWorkItemSummary),
+      blocks: workItem.blocks.map(toWorkItemSummary),
     });
   });
 
   socket.on("getWorkItems", ({ requestId }) => {
     socket.emit("workItems", {
       requestId,
-      todo: workItems,
+      workItems,
     });
   });
   socket.on("disconnect", () => console.log("Client disconnected"));
 });
+
+const toWorkItemSummary = (workItemId: string) => {
+  const workItem = workItems.find((wi) => wi.id === workItemId);
+  return {
+    id: workItemId,
+    title: workItem.title,
+    shortId: workItem.shortId,
+    state: workItem.state,
+  };
+};
 
 server.listen(8080, () => {
   console.log("listening on *:8080");
