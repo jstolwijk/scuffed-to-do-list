@@ -5,6 +5,7 @@ import http from "http";
 import PouchDB from "pouchdb";
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
+import cors from "cors";
 
 const app = express();
 const server = http.createServer(app);
@@ -14,9 +15,18 @@ const authenticationDb = new PouchDB("authentication");
 
 const THIRTY_MINUTES = 30 * 60000;
 
+const allowedOrigins = ["http://localhost:3000", "https://shittytestdomain.xyz", "https://www.shittytestdomain.xyz"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
+);
+
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "https://shittytestdomain.xyz", "https://www.shittytestdomain.xyz"],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -258,6 +268,15 @@ io.on("connection", (socket) => {
         const idx = workItems.findIndex((w) => w.id === wi.id);
         workItems[idx] = { ...wi, riskLevel: workItems[idx].riskLevel - 3 };
       });
+    } else {
+      const blockedWorkItems = workItems[wiId].blocks.map((id: string) => workItems.find((wi) => wi.id === id));
+
+      const yes = blockedWorkItems.filter((wi) => wi.blockedBy);
+
+      yes.forEach((wi) => {
+        const idx = workItems.findIndex((w) => w.id === wi.id);
+        workItems[idx] = { ...wi, riskLevel: Math.min(workItems[idx].riskLevel + 3) };
+      });
     }
 
     socket.broadcast.emit("workItemStateChanged", { workItemId, oldState, newState });
@@ -285,7 +304,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("getWorkItem", ({ requestId, ...rest }) => {
-    const workItem = workItems.find((workItem) => workItem.id === rest.workItemId)!;
+    const workItem = workItems.find((wi) => wi.id === rest.workItemId)!;
+
     socket.emit("workItem", {
       requestId,
       ...workItem,
